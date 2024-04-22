@@ -43,19 +43,23 @@ function paradise_date_picker_shortcode_user()
             <form id="user_date_destination">
                 <div class="form-group">
                     <label for="daterange">Date:</label>
-                    <input type="text" name="daterange" value="" />
+                    <input type="text" name="daterange" class="booking_date_range" value="" />
                 </div>
                 <div class="form-group">
                     <label for="location-from">Source</label>
-                    <input type="text" name="location-from" placeholder="From">
+                    <input type="text" name="location-from" class="booking_source" placeholder="From">
                 </div>
                 <div class="form-group">
                     <label for="location-to">Destination</label>
-                    <input type="text" name="location-to" placeholder="To">
+                    <input type="text" name="location-to" class="booking_destination" placeholder="To">
                 </div>
                 <div class="form-group">
                     <label for="number_of_travellers">Number of Travellers</label>
-                    <input type="number" name="number_of_travellers" placeholder="Number of people">
+                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
+                </div>
+
+                <div class="form-group">
+                    <input type="button" class="booking_button" value="Submit">
                 </div>
             </form>
 
@@ -189,16 +193,16 @@ function get_block_date_of_specific_user()
     $data = $wpdb->get_results("SELECT blocked_date FROM $table WHERE `user_id` = $current_user_id AND `status`>= 'block' ORDER BY id DESC LIMIT 1");
     return $data;
 }
-function generate_random_driver()
-{
-    $args = array(
-        'role'    => 'driver',
-        'fields'  => 'ID'
-    );
-    $user_query = new WP_User_Query($args);
-    $users = $user_query->get_results();
-    return $users;
-}
+// function generate_random_driver()
+// {
+//     $args = array(
+//         'role'    => 'driver',
+//         'fields'  => 'ID'
+//     );
+//     $user_query = new WP_User_Query($args);
+//     $users = $user_query->get_results();
+//     return $users;
+// }
 
 
 add_action("wp_ajax_book_date_range_for_car_booking", "book_date_range_for_car_booking");
@@ -209,9 +213,12 @@ function book_date_range_for_car_booking()
     global $wpdb;
     $table = $wpdb->prefix . 'car_booking';
     $current_user_id = get_current_user_id();
+    $source = $_POST['source'];
+    $destination = $_POST['destination'];
+    $no_of_travellers = $_POST['no_of_travellers'];
     $starting_date = $_POST['start_date'];
     $ending_date = $_POST['end_date'];
-    $users_driver_ids = generate_random_driver();
+    // $users_driver_ids = generate_random_driver();
     $date_range = array();
     // $count_of_drivers = count($users_driver_ids);
 
@@ -225,23 +232,25 @@ function book_date_range_for_car_booking()
 
     $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time);
 
-    if(!$available_drivers){
+    if (!$available_drivers) {
         echo 'not any drivers are available';
-        return;
+        wp_die();
     }
 
     $current_date = strtotime($starting_date_without_time);
     $end_timestamp = strtotime($endiing_date_without_time);
 
-    $numbers = $users_driver_ids;
-    $random_key = array_rand($numbers);
-    $random_id = $numbers[$random_key];
+    $random_key = array_rand($available_drivers);
+    $random_id = $available_drivers[$random_key];
 
     $table = $wpdb->prefix . 'car_booking';
 
     // echo 'random id => ' . $random_id;
 
     // random id ko block date haru get gareko
+
+    /*** -----------------------------------------NOTE: no of travellers ko column missing xa database ma --------------------------- */
+
     $bookings = $wpdb->get_results("SELECT `blocked_date` FROM $table WHERE `status` = 'booking' AND `user_id` = $random_id");
 
 
@@ -259,8 +268,8 @@ function book_date_range_for_car_booking()
 
     if (empty($bookings)) {
         // random user lai assign garera date booking garxa
-        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id, 'status' => 'booking');
-        $assigned_format = array('%d', '%s', '%s', '%d', '%s');
+        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id,'source'=>$source, 'destination'=>$destination, 'no_of_travellers'=>$no_of_travellers, 'status' => 'booking');
+        $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%s');
         $wpdb->insert($table, $assigned, $assigned_format);
 
         // if user alerady database ma xa vane random id ko block date update garxa natra insert garxa
