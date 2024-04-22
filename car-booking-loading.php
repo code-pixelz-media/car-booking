@@ -215,6 +215,24 @@ function book_date_range_for_car_booking()
     $date_range = array();
     // $count_of_drivers = count($users_driver_ids);
 
+    // date rand implode gareko random id ko lagi block garna lai
+    $starting_date_without_time = date("Y-m-d", strtotime($starting_date));
+    $endiing_date_without_time = date("Y-m-d", strtotime($ending_date));
+
+    // date rand implode gareko random id ko lagi block garna lai
+    $starting_date_without_time = date("Y-m-d", strtotime($starting_date));
+    $endiing_date_without_time = date("Y-m-d", strtotime($ending_date));
+
+    $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time);
+
+    if(!$available_drivers){
+        echo 'not any drivers are available';
+        return;
+    }
+
+    $current_date = strtotime($starting_date_without_time);
+    $end_timestamp = strtotime($endiing_date_without_time);
+
     $numbers = $users_driver_ids;
     $random_key = array_rand($numbers);
     $random_id = $numbers[$random_key];
@@ -227,11 +245,7 @@ function book_date_range_for_car_booking()
     $bookings = $wpdb->get_results("SELECT `blocked_date` FROM $table WHERE `status` = 'booking' AND `user_id` = $random_id");
 
 
-    // date rand implode gareko random id ko lagi block garna lai
-    $starting_date_without_time = date("Y-m-d", strtotime($starting_date));
-    $endiing_date_without_time = date("Y-m-d", strtotime($ending_date));
-    $current_date = strtotime($starting_date_without_time);
-    $end_timestamp = strtotime($endiing_date_without_time);
+
 
     while ($current_date <= $end_timestamp) {
         $date_range[] = date('Y-m-d', $current_date);
@@ -265,69 +279,66 @@ function book_date_range_for_car_booking()
 
 // book garda chai block garne ali kati mileko xaina, driver available xa ki xaina vanera check mileko xaina
 
-add_shortcode('available-driver', 'paradise_get_avilable_driver');
-function paradise_get_avilable_driver()
-{
+if (!function_exists('paradise_get_avilable_driver')) {
+    function paradise_get_avilable_driver($starting_date, $ending_date)
+    {
 
-    // for getting user having role drivers
-    $all_users = get_users();
-    $get_all_drivers = array();
-    foreach ($all_users as $user) {
+        // for getting user having role drivers
+        $all_users = get_users();
+        $get_all_drivers = array();
+        foreach ($all_users as $user) {
 
-        if ($user->has_cap('driver')) {
-            $get_all_drivers[] = $user;
+            if ($user->has_cap('driver')) {
+                $get_all_drivers[] = $user;
+            }
         }
-    }
-    // for getting drivers id;
-    $driver_ids = [];
-    if ($get_all_drivers) {
-        foreach ($get_all_drivers as $get_all_driver) {
-            $driver_ids[] = $get_all_driver->{'ID'};
-        }
-    }
-
-    global $wpdb;
-    $car_booking = $wpdb->prefix . 'car_booking';
-    $selected_date = ['2024-04-12', '2024-05-24'];
-
-    // $explode_selected_date= explode(',',$selected_date);
-    $start_date = strtotime($selected_date[0]);
-    $end_date = strtotime($selected_date[1]);
-
-    // getting data from wp_car_booking table
-    $get_blocked_users_data = $wpdb->get_results("SELECT * FROM $car_booking WHERE status='block'");
-    $available_user = [];
-
-    foreach ($get_blocked_users_data as $get_blocked_user_data) {
-        // getting driver id having blocked date
-        $user_id = (int)$get_blocked_user_data->{'user_id'};
-        $blocked_dates = $get_blocked_user_data->{'blocked_date'};  // getting blocked date -> in string 
-        $explode_blocked_dates = explode(',', $blocked_dates); // converting blocked date into an array;
-
-        $blocked_date_matched = false; // variable for checking if blocked date matched
-
-        // looping through multiple blocekd date of specific user
-        foreach ($explode_blocked_dates as $explode_blocked_date) {
-            // comparing if blocked date gets between start date and end date
-            if (strtotime($explode_blocked_date) >= $start_date && strtotime($explode_blocked_date) <= $end_date) {
-                $blocked_date_matched = true;  // if blocked date get between start and end date then setting it true
-                break;
+        // for getting drivers id;
+        $driver_ids = [];
+        if ($get_all_drivers) {
+            foreach ($get_all_drivers as $get_all_driver) {
+                $driver_ids[] = $get_all_driver->{'ID'};
             }
         }
 
-        if (!$blocked_date_matched) {
-            $available_user[] = $user_id;
+        global $wpdb;
+        $car_booking = $wpdb->prefix . 'car_booking';
+
+        $start_date = strtotime($starting_date);
+        $end_date = strtotime($ending_date);
+
+        // getting data from wp_car_booking table
+        $get_blocked_users_data = $wpdb->get_results("SELECT * FROM $car_booking WHERE status='block'");
+        $available_user = [];
+
+        foreach ($get_blocked_users_data as $get_blocked_user_data) {
+            // getting driver id having blocked date
+            $user_id = (int)$get_blocked_user_data->{'user_id'};
+            $blocked_dates = $get_blocked_user_data->{'blocked_date'};  // getting blocked date -> in string 
+            $explode_blocked_dates = explode(',', $blocked_dates); // converting blocked date into an array;
+
+            $blocked_date_matched = false; // variable for checking if blocked date matched
+
+            // looping through multiple blocekd date of specific user
+            foreach ($explode_blocked_dates as $explode_blocked_date) {
+                // comparing if blocked date gets between start date and end date
+                if (strtotime($explode_blocked_date) >= $start_date && strtotime($explode_blocked_date) <= $end_date) {
+                    $blocked_date_matched = true;  // if blocked date get between start and end date then setting it true
+                    break;
+                }
+            }
+
+            if (!$blocked_date_matched) {
+                $available_user[] = $user_id;
+            }
         }
+        $user_id_column = array_column($get_blocked_users_data, 'user_id'); // getting user ids from car_booking table
+
+        // getting drivers id from users table which are not listed in car_booking table
+        $available_driver = array_diff($driver_ids, $user_id_column);
+
+        // merging available  drivers form from user table and car_booking table
+        $merging_available_users = array_merge($available_driver, $available_user);
+        // var_dump($merging_available_users);
+        return $merging_available_users;
     }
-    $user_id_column = array_column($get_blocked_users_data, 'user_id'); // getting user ids from car_booking table
-
-    // getting drivers id from users table which are not listed in car_booking table
-    $available_driver = array_diff($driver_ids, $user_id_column);
-
-    // merging available  drivers form from user table and car_booking table
-    $merging_available_users =array_merge($available_driver, $available_user);
-    var_dump($merging_available_users);
- 
-  
-
 }
