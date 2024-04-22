@@ -57,6 +57,11 @@ function paradise_date_picker_shortcode_user()
                     <label for="number_of_travellers">Number of Travellers</label>
                     <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
                 </div>
+                <div class="form-group">
+                    <label for="Phone number">Phone Number</label>
+                    <input type="number" name="booking_phone_number" placeholder="Phone Number" class="booking_phone_number"/>
+
+                </div>
 
                 <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
@@ -71,6 +76,7 @@ function paradise_date_picker_shortcode_user()
                             <th>Date End</th>
                             <th>Source</th>
                             <th>Destination</th>
+                            <th> No of Travellers </th>
                             <th>Contact</th>
                             <th>Driver Details</th>
                         </tr>
@@ -80,12 +86,19 @@ function paradise_date_picker_shortcode_user()
                             <tr>
                                 <td><?php echo date("Y-m-d", strtotime($booking->date_from)); ?></td>
                                 <td><?php echo date("Y-m-d", strtotime($booking->date_to)); ?></td>
-                                <td>Kathmandu</td>
-                                <td>Colombo</td>
-                                <td>123456789</td>
+                                <td><?php echo $booking->source; ?></td>
+                                <td><?php echo $booking->destination;?> </td>
+                                <td> <?php echo $booking->no_of_travellers; ?> </td>
+                                <td><?php echo $booking->phone_number ?> </td>
                                 <td>
-                                    <img src="image.webp" alt="driver" />
-                                    <span>Saugat Thapa</span><span> 123456789</span>
+                                    <?php 
+                                    $user_id = $booking->assigned_user;
+                                    $user_details = get_userdata($user_id);
+                                    $user_image = get_avatar_url($user_id);
+                                    ?>
+
+                                    <img src="<?php echo $user_image?$user_image:''?>" alt="driver" />
+                                    <span><?php echo $user_details->display_name; ?> </span><span> 123456789</span>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -216,6 +229,7 @@ function book_date_range_for_car_booking()
     $source = $_POST['source'];
     $destination = $_POST['destination'];
     $no_of_travellers = $_POST['no_of_travellers'];
+    $phone_number = $_POST['phone_number'];
     $starting_date = $_POST['start_date'];
     $ending_date = $_POST['end_date'];
     // $users_driver_ids = generate_random_driver();
@@ -268,8 +282,8 @@ function book_date_range_for_car_booking()
 
     if (empty($bookings)) {
         // random user lai assign garera date booking garxa
-        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id,'source'=>$source, 'destination'=>$destination, 'no_of_travellers'=>$no_of_travellers, 'status' => 'booking');
-        $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%s');
+        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id,'source'=>$source, 'destination'=>$destination, 'no_of_travellers'=>$no_of_travellers, 'phone_number'=>$phone_number, 'status' => 'booking');
+        $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%s');
         $wpdb->insert($table, $assigned, $assigned_format);
 
         // if user alerady database ma xa vane random id ko block date update garxa natra insert garxa

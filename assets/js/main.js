@@ -53,13 +53,13 @@ jQuery(document).ready(function () {
     var source_val = jQuery(".booking_source").val();
     var destination_val = jQuery(".booking_destination").val();
     var noOfTravellers = jQuery(".booking_no_of_travellers").val();
-
+    var phoneNumber = jQuery(".booking_phone_number").val();
 
     var date_range_split = dateRange.split('-');
     var startDate = date_range_split[0];
     var endDate = date_range_split[1];
 
-    // if(dateRange == '' || source_val == '' || destination_val == '' || noOfTravellers == ''){
+    // if(dateRange == '' || source_val == '' || destination_val == '' || noOfTravellers == '' || booking_number =''){
     //   alert('Fields cannot be empty.');
     //   return;
     // }
@@ -72,13 +72,14 @@ jQuery(document).ready(function () {
             source : source_val,
             destination : destination_val,
             no_of_travellers : noOfTravellers,
+            phone_number: phoneNumber,
             start_date: moment(startDate).format("Y-MM-DD HH:mm:ss"),
             end_date: moment(endDate).format("Y-MM-DD HH:mm:ss"),
           },
           success: function (response) {
             console.log("response", response);
             // alert(response);
-            // location.reload();
+            location.reload();
           },
         });
   });
