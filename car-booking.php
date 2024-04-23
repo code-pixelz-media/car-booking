@@ -45,7 +45,6 @@ function activate_paradise_plugin()
                 source varchar(255) NULL,
                 destination varchar(255) NULL,
                 no_of_travellers int(11) NULL,
-                phone_number int(11) NULL, 
                 blocked_date varchar(255) NULL,
                 status varchar(20) NOT NULL,
                 created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -58,12 +58,6 @@ function paradise_date_picker_shortcode_user()
                     <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
                 </div>
                 <div class="form-group">
-                    <label for="Phone number">Phone Number</label>
-                    <input type="number" name="booking_phone_number" placeholder="Phone Number" class="booking_phone_number"/>
-
-                </div>
-
-                <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
                 </div>
             </form>
@@ -87,17 +81,17 @@ function paradise_date_picker_shortcode_user()
                                 <td><?php echo date("Y-m-d", strtotime($booking->date_from)); ?></td>
                                 <td><?php echo date("Y-m-d", strtotime($booking->date_to)); ?></td>
                                 <td><?php echo $booking->source; ?></td>
-                                <td><?php echo $booking->destination;?> </td>
+                                <td><?php echo $booking->destination; ?> </td>
                                 <td> <?php echo $booking->no_of_travellers; ?> </td>
                                 <td><?php echo $booking->phone_number ?> </td>
                                 <td>
-                                    <?php 
+                                    <?php
                                     $user_id = $booking->assigned_user;
                                     $user_details = get_userdata($user_id);
                                     $user_image = get_avatar_url($user_id);
                                     ?>
 
-                                    <img src="<?php echo $user_image?$user_image:''?>" alt="driver" />
+                                    <img src="<?php echo $user_image ? $user_image : '' ?>" alt="driver" />
                                     <span><?php echo $user_details->display_name; ?> </span><span> 123456789</span>
                                 </td>
                             </tr>
@@ -191,7 +185,7 @@ function paradise_date_picker_shortcode_driver()
             </div>
         </div>
 
-<?php
+    <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -229,7 +223,6 @@ function book_date_range_for_car_booking()
     $source = $_POST['source'];
     $destination = $_POST['destination'];
     $no_of_travellers = $_POST['no_of_travellers'];
-    $phone_number = $_POST['phone_number'];
     $starting_date = $_POST['start_date'];
     $ending_date = $_POST['end_date'];
     // $users_driver_ids = generate_random_driver();
@@ -245,12 +238,15 @@ function book_date_range_for_car_booking()
     $endiing_date_without_time = date("Y-m-d", strtotime($ending_date));
 
     $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time);
-
+    if (($key = array_search($current_user_id, $available_drivers)) !== false) {
+        
+        unset($available_drivers[$key]); // removing current user from available drivers
+    }
     if (!$available_drivers) {
-        echo 'not any drivers are available';
+        echo 'Drivers are currently unavailable. Please try again later.';
         wp_die();
     }
-
+    
     $current_date = strtotime($starting_date_without_time);
     $end_timestamp = strtotime($endiing_date_without_time);
 
@@ -263,12 +259,7 @@ function book_date_range_for_car_booking()
 
     // random id ko block date haru get gareko
 
-    /*** -----------------------------------------NOTE: no of travellers ko column missing xa database ma --------------------------- */
-
     $bookings = $wpdb->get_results("SELECT `blocked_date` FROM $table WHERE `status` = 'booking' AND `user_id` = $random_id");
-
-
-
 
     while ($current_date <= $end_timestamp) {
         $date_range[] = date('Y-m-d', $current_date);
@@ -277,13 +268,14 @@ function book_date_range_for_car_booking()
     $concat_ids = implode(', ', $date_range);
 
     // check random id table ma xa ki xaina vanera
-    $sql = $wpdb->prepare("SELECT * FROM $table WHERE id = %d", $random_id);
+    $sql = $wpdb->prepare("SELECT * FROM $table WHERE id = %d and status= %s", $random_id, 'block');
     $result = $wpdb->get_results($sql);
 
     if (empty($bookings)) {
+        echo 'empty';
         // random user lai assign garera date booking garxa
-        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id,'source'=>$source, 'destination'=>$destination, 'no_of_travellers'=>$no_of_travellers, 'phone_number'=>$phone_number, 'status' => 'booking');
-        $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%d', '%s');
+        $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id, 'source' => $source, 'destination' => $destination, 'no_of_travellers' => $no_of_travellers, 'status' => 'booking');
+        $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%s');
         $wpdb->insert($table, $assigned, $assigned_format);
 
         // if user alerady database ma xa vane random id ko block date update garxa natra insert garxa
@@ -297,7 +289,7 @@ function book_date_range_for_car_booking()
     } else {
         echo 'block date haru xa';
     }
-    die();
+    wp_die();
 }
 
 // book garda chai block garne ali kati mileko xaina, driver available xa ki xaina vanera check mileko xaina
@@ -363,5 +355,47 @@ if (!function_exists('paradise_get_avilable_driver')) {
         $merging_available_users = array_merge($available_driver, $available_user);
         // var_dump($merging_available_users);
         return $merging_available_users;
+    }
+}
+
+
+
+if (!function_exists('paradise_user_profile_fields')) {
+    add_action('show_user_profile', 'paradise_user_profile_fields');
+    add_action('edit_user_profile', 'paradise_user_profile_fields');
+    add_action('user_new_form', 'paradise_user_profile_fields');
+
+    function paradise_user_profile_fields($user)
+    {
+        $phone_number = get_user_meta($user->id, 'phone_number', true);
+
+    ?>
+
+        <table class="form-table">
+            <tr>
+                <th><label for="phone_number">Phone Number</label></th>
+                <td>
+                    <input type="number" name="phone_number" id="phone_number" value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text" placeholder="Enter phone number." />
+                </td>
+            </tr>
+        </table>
+<?php
+    }
+}
+
+
+//  process the extra fields for new user form
+
+if (!function_exists('paradise_save_user_profile_fields')) {
+    add_action('user_register', 'paradise_save_user_profile_fields', 10, 1);
+    add_action('personal_options_update', 'paradise_save_user_profile_fields', 10, 1);
+    add_action('edit_user_profile_update', 'paradise_save_user_profile_fields', 10, 1);
+
+    function paradise_save_user_profile_fields($user_id)
+    {
+
+        if (isset($_POST['phone_number'])) {
+            update_user_meta($user_id, 'phone_number', $_POST['phone_number']);
+        }
     }
 }

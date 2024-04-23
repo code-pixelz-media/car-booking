@@ -34,13 +34,13 @@ jQuery(document).ready(function () {
   //   }
   // );
 
-  // jQuery("#datePick").multiDatesPicker({
-  //   dateFormat: "yy-mm-dd",
-  // });
-  // jQuery("#datePick").multiDatesPicker({
-  //   disabled: true,
-  //   addDates: date,
-  // });
+  jQuery("#datePick").multiDatesPicker({
+    dateFormat: "yy-mm-dd",
+  });
+  jQuery("#datePick").multiDatesPicker({
+    disabled: true,
+    addDates: date,
+  });
 
   // sunder js
 
@@ -53,7 +53,6 @@ jQuery(document).ready(function () {
     var source_val = jQuery(".booking_source").val();
     var destination_val = jQuery(".booking_destination").val();
     var noOfTravellers = jQuery(".booking_no_of_travellers").val();
-    var phoneNumber = jQuery(".booking_phone_number").val();
 
     var date_range_split = dateRange.split('-');
     var startDate = date_range_split[0];
@@ -72,14 +71,13 @@ jQuery(document).ready(function () {
             source : source_val,
             destination : destination_val,
             no_of_travellers : noOfTravellers,
-            phone_number: phoneNumber,
             start_date: moment(startDate).format("Y-MM-DD HH:mm:ss"),
             end_date: moment(endDate).format("Y-MM-DD HH:mm:ss"),
           },
           success: function (response) {
             console.log("response", response);
             // alert(response);
-            location.reload();
+            // location.reload();
           },
         });
   });
