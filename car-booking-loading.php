@@ -268,11 +268,12 @@ function book_date_range_for_car_booking()
     $concat_ids = implode(', ', $date_range);
 
     // check random id table ma xa ki xaina vanera
-    $sql = $wpdb->prepare("SELECT * FROM $table WHERE id = %d and status= %s", $random_id, 'block');
+    // added status and chaged id to user_id 
+    $sql = $wpdb->prepare("SELECT * FROM $table WHERE user_id = %d and status= %s", $random_id, 'block');
     $result = $wpdb->get_results($sql);
-
+    
     if (empty($bookings)) {
-        echo 'empty';
+
         // random user lai assign garera date booking garxa
         $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id, 'source' => $source, 'destination' => $destination, 'no_of_travellers' => $no_of_travellers, 'status' => 'booking');
         $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%s');
