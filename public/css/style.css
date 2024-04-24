@@ -80,9 +80,7 @@ h2.paradise-table-header {
   background-color: white;
   overflow-x: auto;
 }
-#bf9b30
-
-.paradise-table td,
+#bf9b30 .paradise-table td,
 .paradise-table th {
   text-align: center;
   padding: 8px;
@@ -91,6 +89,7 @@ h2.paradise-table-header {
 .paradise-table td {
   border-right: 1px solid #f8f8f8;
   font-size: 12px;
+  text-align: center;
 }
 
 .paradise-table thead th {
@@ -106,15 +105,14 @@ h2.paradise-table-header {
 } */
 
 .paradise-table#pd-cust-table tr:nth-child(even),
- .paradise-table#pd-driver-table tr:nth-child(even)
-{
+.paradise-table#pd-driver-table tr:nth-child(even) {
   background: #f8f8f8;
 }
 .paradise-table td img {
   width: 50px;
   border-radius: 50px;
 }
-.paradise-table td:last-child,
+/* .paradise-table td:last-child, */
 .paradise-table td:first-child:not(.paradise-customer-table td) {
   display: flex;
   flex-direction: column;

@@ -14,11 +14,11 @@ function paradice_booking_load_scripts()
     wp_enqueue_script('paradise-jquery-ui-js', "https://code.jquery.com/ui/1.9.2/jquery-ui.js", array(), rand());
     wp_enqueue_script('paradise-multi-datepicker-js', "https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js", array(), rand());
     wp_enqueue_script('paradise-main-js', plugin_dir_url(__FILE__) . '/public/js/main.js', array(), rand());
-    wp_enqueue_style('paradise-datepicker-css', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css", false,   rand());
-    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . '/public/css/style.css', false,   rand());
+    wp_enqueue_style('paradise-datepicker-css', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css", false, rand());
+    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . '/public/css/style.css', false, rand());
 
-   wp_enqueue_style('paradise-admin-style', plugin_dir_url(__FILE__) . '/admin/css/style.css', false,   rand());
-   wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
+    wp_enqueue_style('paradise-admin-style', plugin_dir_url(__FILE__) . '/admin/css/style.css', false, rand());
+    wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
 
     wp_localize_script('paradise-main-js', 'myajax', array('ajaxurl' => admin_url('admin-ajax.php')));
 }
@@ -58,7 +58,8 @@ function paradise_date_picker_shortcode_user()
                 </div>
                 <div class="form-group">
                     <label for="number_of_travellers">Number of Travellers</label>
-                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
+                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers"
+                        placeholder="Number of people">
                 </div>
                 <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
@@ -96,7 +97,8 @@ function paradise_date_picker_shortcode_user()
                                     ?>
 
                                     <img src="<?php echo $user_image ? $user_image : '' ?>" alt="driver" />
-                                    <span><?php echo $user_details->display_name; ?> </span><span> <?php echo $phone_number ?></span>
+                                    <span><?php echo $user_details->display_name; ?> </span><span>
+                                        <?php echo $phone_number ?></span>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -115,14 +117,14 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    if (!current_user_can('driver') ) {
+    if (!current_user_can('driver')) {
         global $wp_query;
         $wp_query->set_404();
         status_header(404);
         get_template_part(404); // This line displays the 404 template.
         exit();
     }
-    
+
     ob_start();
     global $wpdb;
     $table = $wpdb->prefix . 'car_booking';
@@ -144,7 +146,7 @@ function paradise_date_picker_shortcode_driver()
 
                 $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
                 header("Refresh:0");
-           
+
             }
         }
         $current_user_block_dates = array();
@@ -179,7 +181,7 @@ function paradise_date_picker_shortcode_driver()
                             <th>Date End</th>
                             <th>Source</th>
                             <th>Destination</th>
-                            <th>Contact</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -192,7 +194,7 @@ function paradise_date_picker_shortcode_driver()
                             <td>2024/04/18</td>
                             <td>Kathmandu</td>
                             <td>Colombo</td>
-                            <td>123456789</td>
+
                         </tr>
                         <tr>
                             <td>
@@ -203,14 +205,14 @@ function paradise_date_picker_shortcode_driver()
                             <td>2024/04/18</td>
                             <td>Kathmandu</td>
                             <td>Colombo</td>
-                            <td>123456789</td>
+
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-    <?php
+        <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -351,7 +353,7 @@ if (!function_exists('paradise_get_avilable_driver')) {
 
         foreach ($get_blocked_users_data as $get_blocked_user_data) {
             // getting driver id having blocked date
-            $user_id = (int)$get_blocked_user_data->{'user_id'};
+            $user_id = (int) $get_blocked_user_data->{'user_id'};
             $blocked_dates = $get_blocked_user_data->{'blocked_date'};  // getting blocked date -> in string 
             $explode_blocked_dates = explode(',', $blocked_dates); // converting blocked date into an array;
 
@@ -395,17 +397,19 @@ if (!function_exists('paradise_user_profile_fields')) {
     {
         $phone_number = get_user_meta($user->id, 'phone_number', true);
 
-    ?>
+        ?>
 
         <table class="form-table">
             <tr>
                 <th><label for="phone_number">Phone Number</label></th>
                 <td>
-                    <input type="number" name="phone_number" id="phone_number" value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text" placeholder="Enter phone number." />
+                    <input type="number" name="phone_number" id="phone_number"
+                        value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text"
+                        placeholder="Enter phone number." />
                 </td>
             </tr>
         </table>
-<?php
+        <?php
     }
 }
 
