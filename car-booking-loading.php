@@ -42,7 +42,7 @@ function paradise_date_picker_shortcode_user()
         $bookings = $wpdb->get_results("SELECT * FROM $table WHERE `status` = 'booking' AND `user_id` = $current_user_id"); ?>
         <!-- HTML code here -->
         <div class="customer-dashboard-front">
-
+            <div class="paradise-msg"></div>
             <form id="user_date_destination">
                 <div class="form-group">
                     <label for="daterange">Date:</label>
@@ -58,8 +58,7 @@ function paradise_date_picker_shortcode_user()
                 </div>
                 <div class="form-group">
                     <label for="number_of_travellers">Number of Travellers</label>
-                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers"
-                        placeholder="Number of people">
+                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
                 </div>
                 <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
@@ -106,7 +105,7 @@ function paradise_date_picker_shortcode_user()
                 </table>
             </div>
         </div>
-        <?php
+    <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -117,7 +116,7 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    if (!current_user_can('driver')) {
+    if (!current_user_can('driver') && !is_admin()) {
         global $wp_query;
         $wp_query->set_404();
         status_header(404);
@@ -146,7 +145,6 @@ function paradise_date_picker_shortcode_driver()
 
                 $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
                 header("Refresh:0");
-
             }
         }
         $current_user_block_dates = array();
@@ -163,7 +161,7 @@ function paradise_date_picker_shortcode_driver()
 
         // var_dump($data_of_blocked_date_current_users);
 
-        ?>
+    ?>
         <div class="driver-dashboard-front">
 
             <form method="post" class="paradise-front-driver">
@@ -212,7 +210,7 @@ function paradise_date_picker_shortcode_driver()
             </div>
         </div>
 
-        <?php
+    <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -397,19 +395,17 @@ if (!function_exists('paradise_user_profile_fields')) {
     {
         $phone_number = get_user_meta($user->id, 'phone_number', true);
 
-        ?>
+    ?>
 
         <table class="form-table">
             <tr>
                 <th><label for="phone_number">Phone Number</label></th>
                 <td>
-                    <input type="number" name="phone_number" id="phone_number"
-                        value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text"
-                        placeholder="Enter phone number." />
+                    <input type="number" name="phone_number" id="phone_number" value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text" placeholder="Enter phone number." />
                 </td>
             </tr>
         </table>
-        <?php
+<?php
     }
 }
 
@@ -427,5 +423,3 @@ if (!function_exists('paradise_save_user_profile_fields')) {
         }
     }
 }
-
-
