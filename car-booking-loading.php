@@ -29,6 +29,12 @@ add_action('wp_enqueue_scripts', 'paradice_booking_load_scripts');
 require plugin_dir_path(__FILE__) . '/setup_codes.php';
 
 
+// Enqueue Font Awesome
+function enqueue_font_awesome()
+{
+    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+}
+add_action('wp_enqueue_scripts', 'enqueue_font_awesome');
 
 /* Use shortcode [paradise-date-picker-user] */
 add_shortcode('paradise-date-picker-user', 'paradise_date_picker_shortcode_user');
@@ -46,17 +52,21 @@ function paradise_date_picker_shortcode_user()
             <form id="user_date_destination">
                 <div class="form-group">
                     <label for="daterange">Date:</label>
+                    <span class="dashicons dashicons-calendar"></span>
                     <input type="text" name="daterange" class="booking_date_range" value="" />
                 </div>
                 <div class="form-group">
+                    <span class="dashicons dashicons-location"></span>
                     <label for="location-from">Source</label>
                     <input type="text" name="location-from" class="booking_source" placeholder="From">
                 </div>
                 <div class="form-group">
+                    <span class="dashicons dashicons-location"></span>
                     <label for="location-to">Destination</label>
                     <input type="text" name="location-to" class="booking_destination" placeholder="To">
                 </div>
                 <div class="form-group">
+                    <span class="dashicons dashicons-businessman"></span>
                     <label for="number_of_travellers">Number of Travellers</label>
                     <input type="number" name="number_of_travellers" class="booking_no_of_travellers"
                         placeholder="Number of people">
@@ -75,7 +85,7 @@ function paradise_date_picker_shortcode_user()
                             <th>Source</th>
                             <th>Destination</th>
                             <th> No of Travellers </th>
-                            <th>Contact</th>
+                            <!-- <th>Contact</th> -->
                             <th>Driver Details</th>
                         </tr>
                     </thead>
@@ -87,7 +97,7 @@ function paradise_date_picker_shortcode_user()
                                 <td><?php echo $booking->source; ?></td>
                                 <td><?php echo $booking->destination; ?> </td>
                                 <td> <?php echo $booking->no_of_travellers; ?> </td>
-                                <td><?php echo get_user_meta($booking->user_id, 'phone_number', true) ?> </td>
+
                                 <td>
                                     <?php
                                     $user_id = $booking->assigned_user;
