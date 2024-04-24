@@ -116,13 +116,15 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    if (!current_user_can('driver')) {
-        global $wp_query;
-        $wp_query->set_404();
-        status_header(404);
-        get_template_part(404); // This line displays the 404 template.
-        exit();
-    }
+    // $allowed_roles = array( 'editor', 'administrator' );
+
+    // if (!current_user_can($allowed_roles)){
+    //     global $wp_query;
+    //     $wp_query->set_404();
+    //     status_header(404);
+    //     get_template_part(404); // This line displays the 404 template.
+    //     exit();
+    // }
 
     ob_start();
     global $wpdb;
@@ -139,10 +141,7 @@ function paradise_date_picker_shortcode_driver()
                 $format = array('%d', '%s', '%s');
                 $wpdb->insert($table, $data, $format);
             } else {
-                echo '<pre>';
                 $block_date = $_POST['multi_data'];
-                var_dump($block_date);
-
                 $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
                 header("Refresh:0");
             }
@@ -173,8 +172,6 @@ function paradise_date_picker_shortcode_driver()
             <div class="table-wrapper paradise-driver-table">
                 <?php
                 $driver_booking_details = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE assigned_user=%d AND status=%s ORDER BY id desc", $current_user_id, 'booking'));
-                echo '<pre>';
-                // var_dump($driver_booking_details);
                 ?>
                 <table class="paradise-table" id="pd-driver-table">
                     <thead>
@@ -190,14 +187,10 @@ function paradise_date_picker_shortcode_driver()
                     <tbody>
                         <?php
                         foreach ($driver_booking_details as $driver_booking_detail) {
-                            // $customer_id = $driver_booking_details->{'user_id'};
                         ?>
                             <tr>
-                            <!-- <td>
-                                    <img src="image.webp" alt="driver" />
-                                    <span>Saugat Thapa</span><span> 123456789</span>
-                                </td> -->
-                            <td>
+                                
+                                <td>
                                     <?php
                                     $user_id = $driver_booking_detail->user_id;
                                     $user_details = get_userdata($user_id);
@@ -210,23 +203,12 @@ function paradise_date_picker_shortcode_driver()
                                     <span><?php echo $user_details->display_name; ?> </span><span>
                                         <?php echo $phone_number ?></span>
                                 </td>
-                                <td><?php echo $driver_booking_detail->date_from ; ?></td>
-                                <td><?php echo $driver_booking_detail->date_to ;?></td>
-                                <td><?php echo $driver_booking_detail->source ;?></td>
-                                <td><?php echo $driver_booking_detail->destination;?></td>
+                                <td><?php echo $driver_booking_detail->date_from; ?></td>
+                                <td><?php echo $driver_booking_detail->date_to; ?></td>
+                                <td><?php echo $driver_booking_detail->source; ?></td>
+                                <td><?php echo $driver_booking_detail->destination; ?></td>
 
                             </tr>
-                            <!-- <tr>
-                                <td>
-                                    <img src="image.webp" alt="driver" />
-                                    <span>Saugat Thapa</span><span> 123456789</span>
-                                </td>
-                                <td>2024/04/16</td>
-                                <td>2024/04/18</td>
-                                <td>Kathmandu</td>
-                                <td>Colombo</td>
-
-                            </tr> -->
 
                         <?php
                         }
