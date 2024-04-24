@@ -13,9 +13,12 @@ function paradice_booking_load_scripts()
     wp_enqueue_script('paradise-datepicker-js', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js", array(), rand());
     wp_enqueue_script('paradise-jquery-ui-js', "https://code.jquery.com/ui/1.9.2/jquery-ui.js", array(), rand());
     wp_enqueue_script('paradise-multi-datepicker-js', "https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js", array(), rand());
-    wp_enqueue_script('paradise-main-js', plugin_dir_url(__FILE__) . '/assets/js/main.js', array(), rand());
+    wp_enqueue_script('paradise-main-js', plugin_dir_url(__FILE__) . '/public/js/main.js', array(), rand());
     wp_enqueue_style('paradise-datepicker-css', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css", false,   rand());
-    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . '/assets/css/style.css', false,   rand());
+    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . '/public/css/style.css', false,   rand());
+
+   wp_enqueue_style('paradise-admin-style', plugin_dir_url(__FILE__) . '/admin/css/style.css', false,   rand());
+   wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
 
     wp_localize_script('paradise-main-js', 'myajax', array('ajaxurl' => admin_url('admin-ajax.php')));
 }
