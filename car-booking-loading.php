@@ -48,7 +48,7 @@ function paradise_date_picker_shortcode_user()
         $bookings = $wpdb->get_results("SELECT * FROM $table WHERE `status` = 'booking' AND `user_id` = $current_user_id"); ?>
         <!-- HTML code here -->
         <div class="customer-dashboard-front">
-
+            <div class="paradise-msg"></div>
             <form id="user_date_destination">
                 <div class="form-group">
                     <label for="daterange">Date:</label>
@@ -68,8 +68,7 @@ function paradise_date_picker_shortcode_user()
                 <div class="form-group">
                     <span class="dashicons dashicons-businessman"></span>
                     <label for="number_of_travellers">Number of Travellers</label>
-                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers"
-                        placeholder="Number of people">
+                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
                 </div>
                 <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
@@ -116,7 +115,7 @@ function paradise_date_picker_shortcode_user()
                 </table>
             </div>
         </div>
-        <?php
+    <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -127,13 +126,15 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    if (!current_user_can('driver')) {
-        global $wp_query;
-        $wp_query->set_404();
-        status_header(404);
-        get_template_part(404); // This line displays the 404 template.
-        exit();
-    }
+    // $allowed_roles = array( 'editor', 'administrator' );
+
+    // if (!current_user_can($allowed_roles)){
+    //     global $wp_query;
+    //     $wp_query->set_404();
+    //     status_header(404);
+    //     get_template_part(404); // This line displays the 404 template.
+    //     exit();
+    // }
 
     ob_start();
     global $wpdb;
@@ -150,13 +151,9 @@ function paradise_date_picker_shortcode_driver()
                 $format = array('%d', '%s', '%s');
                 $wpdb->insert($table, $data, $format);
             } else {
-                echo '<pre>';
                 $block_date = $_POST['multi_data'];
-                var_dump($block_date);
-
                 $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
                 header("Refresh:0");
-
             }
         }
         $current_user_block_dates = array();
@@ -173,7 +170,7 @@ function paradise_date_picker_shortcode_driver()
 
         // var_dump($data_of_blocked_date_current_users);
 
-        ?>
+    ?>
         <div class="driver-dashboard-front">
 
             <form method="post" class="paradise-front-driver">
@@ -183,6 +180,9 @@ function paradise_date_picker_shortcode_driver()
             </form>
 
             <div class="table-wrapper paradise-driver-table">
+                <?php
+                $driver_booking_details = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE assigned_user=%d AND status=%s ORDER BY id desc", $current_user_id, 'booking'));
+                ?>
                 <table class="paradise-table" id="pd-driver-table">
                     <thead>
                         <tr>
@@ -195,34 +195,40 @@ function paradise_date_picker_shortcode_driver()
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <img src="image.webp" alt="driver" />
-                                <span>Saugat Thapa</span><span> 123456789</span>
-                            </td>
-                            <td>2024/04/16</td>
-                            <td>2024/04/18</td>
-                            <td>Kathmandu</td>
-                            <td>Colombo</td>
+                        <?php
+                        foreach ($driver_booking_details as $driver_booking_detail) {
+                        ?>
+                            <tr>
+                                
+                                <td>
+                                    <?php
+                                    $user_id = $driver_booking_detail->user_id;
+                                    $user_details = get_userdata($user_id);
+                                    // var_dump($user_details);
+                                    $user_image = get_avatar_url($user_id);
+                                    $phone_number = get_user_meta($user_id, 'phone_number', true);
+                                    ?>
 
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="image.webp" alt="driver" />
-                                <span>Saugat Thapa</span><span> 123456789</span>
-                            </td>
-                            <td>2024/04/16</td>
-                            <td>2024/04/18</td>
-                            <td>Kathmandu</td>
-                            <td>Colombo</td>
+                                    <img src="<?php echo $user_image ? $user_image : '' ?>" alt="driver" />
+                                    <span><?php echo $user_details->display_name; ?> </span><span>
+                                        <?php echo $phone_number ?></span>
+                                </td>
+                                <td><?php echo $driver_booking_detail->date_from; ?></td>
+                                <td><?php echo $driver_booking_detail->date_to; ?></td>
+                                <td><?php echo $driver_booking_detail->source; ?></td>
+                                <td><?php echo $driver_booking_detail->destination; ?></td>
 
-                        </tr>
+                            </tr>
+
+                        <?php
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <?php
+    <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -407,19 +413,17 @@ if (!function_exists('paradise_user_profile_fields')) {
     {
         $phone_number = get_user_meta($user->id, 'phone_number', true);
 
-        ?>
+    ?>
 
         <table class="form-table">
             <tr>
                 <th><label for="phone_number">Phone Number</label></th>
                 <td>
-                    <input type="number" name="phone_number" id="phone_number"
-                        value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text"
-                        placeholder="Enter phone number." />
+                    <input type="number" name="phone_number" id="phone_number" value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text" placeholder="Enter phone number." />
                 </td>
             </tr>
         </table>
-        <?php
+<?php
     }
 }
 
@@ -437,5 +441,3 @@ if (!function_exists('paradise_save_user_profile_fields')) {
         }
     }
 }
-
-

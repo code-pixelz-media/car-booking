@@ -80,6 +80,10 @@ jQuery(document).ready(function () {
           success: function (response) {
             console.log("response", response);
             // alert(response);
+            if(response != ''){
+            jQuery('.paradise-msg').text(response);
+            return; 
+            }
             location.reload();
           },
         });
