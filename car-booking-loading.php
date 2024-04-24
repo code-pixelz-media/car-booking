@@ -83,16 +83,17 @@ function paradise_date_picker_shortcode_user()
                                 <td><?php echo $booking->source; ?></td>
                                 <td><?php echo $booking->destination; ?> </td>
                                 <td> <?php echo $booking->no_of_travellers; ?> </td>
-                                <td><?php echo $booking->phone_number ?> </td>
+                                <td><?php echo get_user_meta($booking->user_id, 'phone_number', true) ?> </td>
                                 <td>
                                     <?php
                                     $user_id = $booking->assigned_user;
                                     $user_details = get_userdata($user_id);
                                     $user_image = get_avatar_url($user_id);
+                                    $phone_number = get_user_meta($user_id, 'phone_number', true);
                                     ?>
 
                                     <img src="<?php echo $user_image ? $user_image : '' ?>" alt="driver" />
-                                    <span><?php echo $user_details->display_name; ?> </span><span> 123456789</span>
+                                    <span><?php echo $user_details->display_name; ?> </span><span> <?php echo $phone_number ?></span>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -100,7 +101,7 @@ function paradise_date_picker_shortcode_user()
                 </table>
             </div>
         </div>
-    <?php
+        <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -111,21 +112,38 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
+    if (!current_user_can('driver') ) {
+        global $wp_query;
+        $wp_query->set_404();
+        status_header(404);
+        get_template_part(404); // This line displays the 404 template.
+        exit();
+    }
+    
     ob_start();
+    global $wpdb;
+    $table = $wpdb->prefix . 'car_booking';
+
     if (is_user_logged_in()) {
         $current_user_id = get_current_user_id();
-        if (isset($_POST['block'])) {
-            global $wpdb;
-
-            $table = $wpdb->prefix . 'car_booking';
-            $block_date = $_POST['multi_data'];
-            $data = array('user_id' => $current_user_id, 'blocked_date' => $block_date, 'status' => 'block');
-            $format = array('%d', '%s', '%s');
-            $wpdb->insert($table, $data, $format);
-        }
         $data_of_blocked_date_current_users = get_block_date_of_specific_user();
 
-        var_dump($data_of_blocked_date_current_users);
+        if (isset($_POST['block'])) {
+            if (!$data_of_blocked_date_current_users[0]->{'blocked_date'}) {
+                $block_date = $_POST['multi_data'];
+                $data = array('user_id' => $current_user_id, 'blocked_date' => $block_date, 'status' => 'block');
+                $format = array('%d', '%s', '%s');
+                $wpdb->insert($table, $data, $format);
+            } else {
+                echo '<pre>';
+                $block_date = $_POST['multi_data'];
+                var_dump($block_date);
+
+                $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
+                header("Refresh:0");
+           
+            }
+        }
         $current_user_block_dates = array();
         foreach ($data_of_blocked_date_current_users as $obj) {
             $explode_dates = explode(", ", $obj->blocked_date);
@@ -135,8 +153,12 @@ function paradise_date_picker_shortcode_driver()
                 }
             }
         }
+
         $implode_dates = "'" . implode("','", $current_user_block_dates) . "'";
-    ?>
+
+        // var_dump($data_of_blocked_date_current_users);
+
+        ?>
         <div class="driver-dashboard-front">
 
             <form method="post" class="paradise-front-driver">
@@ -239,14 +261,14 @@ function book_date_range_for_car_booking()
 
     $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time);
     if (($key = array_search($current_user_id, $available_drivers)) !== false) {
-        
+
         unset($available_drivers[$key]); // removing current user from available drivers
     }
     if (!$available_drivers) {
         echo 'Drivers are currently unavailable. Please try again later.';
         wp_die();
     }
-    
+
     $current_date = strtotime($starting_date_without_time);
     $end_timestamp = strtotime($endiing_date_without_time);
 
@@ -254,8 +276,6 @@ function book_date_range_for_car_booking()
     $random_id = $available_drivers[$random_key];
 
     $table = $wpdb->prefix . 'car_booking';
-
-    // echo 'random id => ' . $random_id;
 
     // random id ko block date haru get gareko
 
@@ -271,8 +291,8 @@ function book_date_range_for_car_booking()
     // added status and chaged id to user_id 
     $sql = $wpdb->prepare("SELECT * FROM $table WHERE user_id = %d and status= %s", $random_id, 'block');
     $result = $wpdb->get_results($sql);
-    
-    if (empty($bookings)) {
+
+    if (empty($bookings[0]->{'blocked_date'})) {
 
         // random user lai assign garera date booking garxa
         $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id, 'source' => $source, 'destination' => $destination, 'no_of_travellers' => $no_of_travellers, 'status' => 'booking');
@@ -354,12 +374,14 @@ if (!function_exists('paradise_get_avilable_driver')) {
 
         // merging available  drivers form from user table and car_booking table
         $merging_available_users = array_merge($available_driver, $available_user);
-        // var_dump($merging_available_users);
+
         return $merging_available_users;
     }
 }
 
-
+/**
+ *  function for adding phone number field to the users register and edit profile page
+ */
 
 if (!function_exists('paradise_user_profile_fields')) {
     add_action('show_user_profile', 'paradise_user_profile_fields');
@@ -385,8 +407,6 @@ if (!function_exists('paradise_user_profile_fields')) {
 }
 
 
-//  process the extra fields for new user form
-
 if (!function_exists('paradise_save_user_profile_fields')) {
     add_action('user_register', 'paradise_save_user_profile_fields', 10, 1);
     add_action('personal_options_update', 'paradise_save_user_profile_fields', 10, 1);
@@ -400,3 +420,5 @@ if (!function_exists('paradise_save_user_profile_fields')) {
         }
     }
 }
+
+

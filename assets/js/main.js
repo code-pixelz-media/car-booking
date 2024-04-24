@@ -36,6 +36,8 @@ jQuery(document).ready(function () {
 
   jQuery("#datePick").multiDatesPicker({
     dateFormat: "yy-mm-dd",
+    minDate: 0,
+    
   });
   jQuery("#datePick").multiDatesPicker({
     disabled: true,
@@ -45,6 +47,7 @@ jQuery(document).ready(function () {
   // sunder js
 
   jQuery('input[name="daterange"]').daterangepicker({
+    minDate:new Date(),
     autoApply: true, // for hiding cancel 
   });
 
@@ -77,7 +80,7 @@ jQuery(document).ready(function () {
           success: function (response) {
             console.log("response", response);
             // alert(response);
-            // location.reload();
+            location.reload();
           },
         });
   });
