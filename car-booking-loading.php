@@ -116,7 +116,7 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    if (!current_user_can('driver') && !is_admin()) {
+    if (!current_user_can('driver')) {
         global $wp_query;
         $wp_query->set_404();
         status_header(404);
@@ -171,6 +171,11 @@ function paradise_date_picker_shortcode_driver()
             </form>
 
             <div class="table-wrapper paradise-driver-table">
+                <?php
+                $driver_booking_details = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE assigned_user=%d AND status=%s ORDER BY id desc", $current_user_id, 'booking'));
+                echo '<pre>';
+                // var_dump($driver_booking_details);
+                ?>
                 <table class="paradise-table" id="pd-driver-table">
                     <thead>
                         <tr>
@@ -183,28 +188,49 @@ function paradise_date_picker_shortcode_driver()
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <?php
+                        foreach ($driver_booking_details as $driver_booking_detail) {
+                            // $customer_id = $driver_booking_details->{'user_id'};
+                        ?>
+                            <tr>
+                            <!-- <td>
+                                    <img src="image.webp" alt="driver" />
+                                    <span>Saugat Thapa</span><span> 123456789</span>
+                                </td> -->
                             <td>
-                                <img src="image.webp" alt="driver" />
-                                <span>Saugat Thapa</span><span> 123456789</span>
-                            </td>
-                            <td>2024/04/16</td>
-                            <td>2024/04/18</td>
-                            <td>Kathmandu</td>
-                            <td>Colombo</td>
+                                    <?php
+                                    $user_id = $driver_booking_detail->user_id;
+                                    $user_details = get_userdata($user_id);
+                                    // var_dump($user_details);
+                                    $user_image = get_avatar_url($user_id);
+                                    $phone_number = get_user_meta($user_id, 'phone_number', true);
+                                    ?>
 
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="image.webp" alt="driver" />
-                                <span>Saugat Thapa</span><span> 123456789</span>
-                            </td>
-                            <td>2024/04/16</td>
-                            <td>2024/04/18</td>
-                            <td>Kathmandu</td>
-                            <td>Colombo</td>
+                                    <img src="<?php echo $user_image ? $user_image : '' ?>" alt="driver" />
+                                    <span><?php echo $user_details->display_name; ?> </span><span>
+                                        <?php echo $phone_number ?></span>
+                                </td>
+                                <td><?php echo $driver_booking_detail->date_from ; ?></td>
+                                <td><?php echo $driver_booking_detail->date_to ;?></td>
+                                <td><?php echo $driver_booking_detail->source ;?></td>
+                                <td><?php echo $driver_booking_detail->destination;?></td>
 
-                        </tr>
+                            </tr>
+                            <!-- <tr>
+                                <td>
+                                    <img src="image.webp" alt="driver" />
+                                    <span>Saugat Thapa</span><span> 123456789</span>
+                                </td>
+                                <td>2024/04/16</td>
+                                <td>2024/04/18</td>
+                                <td>Kathmandu</td>
+                                <td>Colombo</td>
+
+                            </tr> -->
+
+                        <?php
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
