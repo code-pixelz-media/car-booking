@@ -72,7 +72,8 @@ input[type="submit"] {
 .paradise-front-driver input[type="submit"] {
   width: fit-content;
 }
-#ui-datepicker-div {
+#ui-datepicker-div,
+#ui-datepicker {
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -212,39 +213,50 @@ h2.paradise-table-header {
   }
 }
 /* datepicker css */
-#ui-datepicker-div .ui-datepicker-prev::before {
+#ui-datepicker-div .ui-datepicker-prev::before,
+#ui-datepicker .ui-datepicker-prev::before {
   content: "\f100";
   font-family: "FontAwesome";
   color: #bf9b30;
   cursor: pointer;
 }
-#ui-datepicker-div .ui-datepicker-next::after {
+#ui-datepicker-div .ui-datepicker-next::after,
+#ui-datepicker .ui-datepicker-next::after {
   content: "\f101";
   font-family: "FontAwesome";
   color: #bf9b30;
   cursor: pointer;
 }
 #ui-datepicker-div .ui-datepicker-prev,
-#ui-datepicker-div .ui-datepicker-next {
+#ui-datepicker-div .ui-datepicker-next,
+#ui-datepicker .ui-datepicker-prev,
+#ui-datepicker .ui-datepicker-next {
   color: transparent;
 }
 #ui-datepicker-div .ui-datepicker-prev span,
-#ui-datepicker-div .ui-datepicker-next span {
+#ui-datepicker-div .ui-datepicker-next span,
+#ui-datepicker .ui-datepicker-prev span,
+#ui-datepicker .ui-datepicker-next span {
   display: none;
 }
-#ui-datepicker-div .ui-datepicker-header {
+#ui-datepicker-div .ui-datepicker-header,
+#ui-datepicker .ui-datepicker-header {
   display: flex;
   justify-content: space-between;
 }
-#ui-datepicker-div .ui-datepicker-header .ui-datepicker-title {
+#ui-datepicker-div .ui-datepicker-header .ui-datepicker-title,
+#ui-datepicker .ui-datepicker-header .ui-datepicker-title {
   order: 2;
 }
-#ui-datepicker-div .ui-datepicker-header .ui-datepicker-next {
+#ui-datepicker-div .ui-datepicker-header .ui-datepicker-next,
+#ui-datepicker .ui-datepicker-header .ui-datepicker-next {
   order: 3;
 }
-#ui-datepicker-div .ui-datepicker-calendar td {
+#ui-datepicker-div .ui-datepicker-calendar td,
+#ui-datepicker .ui-datepicker-calendar td {
   text-align: center;
 }
-#ui-datepicker-div .ui-datepicker-calendar td span {
+#ui-datepicker-div .ui-datepicker-calendar td span,
+#ui-datepicker .ui-datepicker-calendar td span {
   margin: 10px;
 }

@@ -39,10 +39,21 @@ jQuery(document).ready(function () {
     minDate: 0,
 
   });
-  jQuery("#datePick").multiDatesPicker({
+  jQuery("#datePick",).multiDatesPicker({
     disabled: true,
     addDates: date,
   });
+  jQuery("#ui-datepicker").multiDatesPicker({
+    dateFormat: "yy-mm-dd",
+    minDate: 0,
+
+  });
+  jQuery("#ui-datepicker",).multiDatesPicker({
+    disabled: true,
+    addDates: date,
+  });
+
+  jQuery("#ui-datepicker").multiDatesPicker('show');
 
   // sunder js
 
@@ -90,13 +101,4 @@ jQuery(document).ready(function () {
   });
 });
 
-// Arpan js
-jQuery(document).ready(function () {
-  jQuery("#ui-datepicker-div").multiDatesPicker({
-    dateFormat: "yy-mm-dd",
-    minDate: 0,
-    addDisabledDates: '<?php echo $implode_dates; ?>'
-  });
 
-  jQuery("#ui-datepicker-div").multiDatesPicker('show');
-});

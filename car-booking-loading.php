@@ -177,7 +177,7 @@ function paradise_date_picker_shortcode_driver()
                     <input id="datePick" type="text" name="multi_data" data-blocked-date="<?php echo $implode_dates; ?>" />
                     <input type="submit" value="Block Date" name="block">
                 </form>
-                <div id="ui-datepicker-div" class='ui-datepicker-calendar'></div>
+                <div id="ui-datepicker" class='ui-datepicker-calendar'></div>
             </div>
             <div class="table-wrapper paradise-driver-table">
                 <?php
@@ -227,7 +227,6 @@ function paradise_date_picker_shortcode_driver()
                 </table>
             </div>
         </div>
-
         <?php
     }
     $output = ob_get_contents();
