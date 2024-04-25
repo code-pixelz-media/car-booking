@@ -168,7 +168,6 @@ function paradise_date_picker_shortcode_driver()
 
         $implode_dates = "'" . implode("','", $current_user_block_dates) . "'";
 
-        // var_dump($data_of_blocked_date_current_users);
 
     ?>
         <div class="driver-dashboard-front">
@@ -199,7 +198,7 @@ function paradise_date_picker_shortcode_driver()
                         foreach ($driver_booking_details as $driver_booking_detail) {
                         ?>
                             <tr>
-                                
+
                                 <td>
                                     <?php
                                     $user_id = $driver_booking_detail->user_id;
@@ -240,7 +239,7 @@ function get_block_date_of_specific_user()
     global $wpdb;
     $current_user_id = get_current_user_id();
     $table = $wpdb->prefix . 'car_booking';
-    $data = $wpdb->get_results("SELECT blocked_date FROM $table WHERE `user_id` = $current_user_id AND `status`>= 'block' ORDER BY id DESC LIMIT 1");
+    $data = $wpdb->get_results("SELECT blocked_date FROM $table WHERE `user_id` = $current_user_id AND `status`='block' ORDER BY id DESC LIMIT 1");
     return $data;
 }
 // function generate_random_driver()
@@ -411,6 +410,7 @@ if (!function_exists('paradise_user_profile_fields')) {
 
     function paradise_user_profile_fields($user)
     {
+        global $pagenow;
         $phone_number = get_user_meta($user->id, 'phone_number', true);
 
     ?>
@@ -424,6 +424,7 @@ if (!function_exists('paradise_user_profile_fields')) {
             </tr>
         </table>
 <?php
+
     }
 }
 

@@ -66,7 +66,11 @@ function paradise_add_pages()
 }
 
 function admin_car_booking_list_callback()
-{ ?>
+
+{
+    global $wpdb;
+    $car_booking_table = $wpdb->prefix . 'car_booking';
+?>
     <div class="table-wrapper paradise-admin-table">
         <table class="paradise-table">
             <thead>
@@ -76,41 +80,56 @@ function admin_car_booking_list_callback()
                     <th>Date End</th>
                     <th>Source</th>
                     <th>Destination</th>
-                    <th>Contact</th>
+                    <th>No of Travellers </th>
                     <th>Driver Details</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <img src="image.webp" alt="driver" />
-                        <span>Saugat Thapa</span><span> 123456789</span>
-                    </td>
-                    <td>2024/04/16</td>
-                    <td>2024/04/18</td>
-                    <td>Kathmandu</td>
-                    <td>Colombo</td>
-                    <td>123456789</td>
-                    <td>
-                        <img src="image.webp" alt="driver" />
-                        <span>Saugat Thapa</span><span> 123456789</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="image.webp" alt="driver" />
-                        <span>Saugat Thapa</span><span> 123456789</span>
-                    </td>
-                    <td>2024/04/16</td>
-                    <td>2024/04/18</td>
-                    <td>Kathmandu</td>
-                    <td>Colombo</td>
-                    <td>123456789</td>
-                    <td>
-                        <img src="image.webp" alt="driver" />
-                        <span>Saugat Thapa</span><span> 123456789</span>
-                    </td>
-                </tr>
+                <?php
+                $booking_lists = $wpdb->get_results($wpdb->prepare("SELECT * FROM $car_booking_table WHERE status=%s ORDER BY id desc", 'booking'));
+                echo '<pre>';
+                // var_d4ump($booking_lists);
+                foreach ($booking_lists as $booking_list) {
+                    $driver_id = $booking_list->assigned_user;
+                    $customer_id = $booking_list->user_id;
+                ?>
+                    <tr>
+                        <td>
+                            <?php
+
+                            $customer_details = get_userdata($customer_id);
+                            // var_dump($user_details);
+                            $customer_image = get_avatar_url($customer_id);
+                            $customer_phone_number = get_user_meta($customer_id, 'phone_number', true);
+                            ?>
+
+                            <img src="<?php echo $customer_image ? $customer_image : '' ?>" alt="customer" />
+                            <span><?php echo $customer_details->display_name; ?> </span><span>
+                                <?php echo $customer_phone_number ?></span>
+                        </td>
+
+                        <td><?php echo $booking_list->date_from; ?></td>
+                        <td><?php echo $booking_list->date_to; ?></td>
+                        <td><?php echo $booking_list->source; ?></td>
+                        <td><?php echo $booking_list->destination; ?></td>
+                        <td><?php echo $booking_list->no_of_travellers; ?> </td>
+                        <td>
+                            <?php
+
+                            $driver_details = get_userdata($driver_id);
+                            // var_dump($user_details);
+                            $driver_image = get_avatar_url($driver_id);
+                            $driver_phone_number = get_user_meta($driver_id, 'phone_number', true);
+                            ?>
+
+                            <img src="<?php echo $driver_image ? $driver_image : '' ?>" alt="customer" />
+                            <span><?php echo $driver_details->display_name; ?> </span><span>
+                                <?php echo $driver_phone_number ?></span>
+                        </td>
+                    </tr>
+                <?php
+                }
+                ?>
             </tbody>
         </table>
     </div>
