@@ -153,10 +153,10 @@ function paradise_date_picker_shortcode_driver()
             } else {
                 $block_date = $_POST['multi_data'];
                 $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$block_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
-                header("Refresh:0");
             }
         }
         $current_user_block_dates = array();
+        $data_of_blocked_date_current_users = get_block_date_of_specific_user();
         foreach ($data_of_blocked_date_current_users as $obj) {
             $explode_dates = explode(", ", $obj->blocked_date);
             foreach ($explode_dates as $explode_date) {

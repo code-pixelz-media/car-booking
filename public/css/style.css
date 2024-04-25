@@ -68,6 +68,7 @@ input[type="submit"] {
   width: 50%;
   background-color: #fff;
   border-radius: 10px;
+  justify-content: center;
 }
 .paradise-front-driver input,
 .paradise-front-driver input[type="submit"] {
@@ -155,7 +156,7 @@ h2.paradise-table-header {
   white-space: nowrap;
   background-color: white;
   overflow-x: auto;
-  margin: 0;
+  margin: 0 !important;
 }
 #bf9b30 .paradise-table td,
 .paradise-table th {
