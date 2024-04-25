@@ -21,10 +21,6 @@ function paradice_booking_load_scripts()
     wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
 
     wp_localize_script('paradise-main-js', 'myajax', array('ajaxurl' => admin_url('admin-ajax.php')));
-
-    if (!did_action('wp_enqueue_media')) {
-        wp_enqueue_media();
-    }
 }
 add_action('admin_enqueue_scripts', 'paradice_booking_load_scripts');
 add_action('wp_enqueue_scripts', 'paradice_booking_load_scripts');
@@ -331,6 +327,8 @@ function book_date_range_for_car_booking()
             $format = array('%d', '%s', '%s');
             $wpdb->insert($table, $data, $format);
         }
+    } else {
+        echo 'block date haru xa';
     }
     wp_die();
 }
@@ -414,7 +412,6 @@ if (!function_exists('paradise_user_profile_fields')) {
     {
         global $pagenow;
         $phone_number = get_user_meta($user->id, 'phone_number', true);
-        $user_role = $user->roles;
 
         ?>
 
@@ -429,30 +426,7 @@ if (!function_exists('paradise_user_profile_fields')) {
             </tr>
         </table>
         <?php
-<<<<<<< Updated upstream
-=======
-       if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
-            $car_image_id = get_user_meta($user->id, 'car_image_id', true);
-            $car_image_src = wp_get_attachment_url($car_image_id);
-        ?>
->>>>>>> Stashed changes
 
-            <table class="form-table">
-                <tr>
-                    <th><label for="phone_number">Vehicle Image</label></th>
-                    <td>
-                        <div class="driver_car_image_main">
-
-                            <img src="<?php echo $car_image_src ? $car_image_src : '' ?>" id="driver-car-image-src">
-                            <a href='#' class='upload_car_image button button-secondary'><?php _e('Upload Vehicle Image'); ?></a>
-
-                            <input type='hidden' name='car_image_id' id='car_image_id' value='<?php echo $car_image_id ? $car_image_id : ''; ?>' />
-                        </div>
-                    </td>
-                </tr>
-            </table>
-<?php
-        }
     }
 }
 
@@ -467,9 +441,6 @@ if (!function_exists('paradise_save_user_profile_fields')) {
 
         if (isset($_POST['phone_number'])) {
             update_user_meta($user_id, 'phone_number', $_POST['phone_number']);
-        }
-        if (isset($_POST['car_image_id'])) {
-            update_user_meta($user_id, 'car_image_id', $_POST['car_image_id']);
         }
     }
 }
