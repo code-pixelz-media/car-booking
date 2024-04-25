@@ -21,10 +21,6 @@ function paradice_booking_load_scripts()
     wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
 
     wp_localize_script('paradise-main-js', 'myajax', array('ajaxurl' => admin_url('admin-ajax.php')));
-
-    if (!did_action('wp_enqueue_media')) {
-        wp_enqueue_media();
-    }
 }
 add_action('admin_enqueue_scripts', 'paradice_booking_load_scripts');
 add_action('wp_enqueue_scripts', 'paradice_booking_load_scripts');
@@ -32,11 +28,10 @@ add_action('wp_enqueue_scripts', 'paradice_booking_load_scripts');
 
 require plugin_dir_path(__FILE__) . '/setup_codes.php';
 
-
-// Enqueue Font Awesome
 function enqueue_font_awesome()
 {
-    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+    // Enqueue Font Awesome CSS from a CDN
+    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 }
 add_action('wp_enqueue_scripts', 'enqueue_font_awesome');
 
@@ -72,7 +67,8 @@ function paradise_date_picker_shortcode_user()
                 <div class="form-group">
                     <span class="dashicons dashicons-businessman"></span>
                     <label for="number_of_travellers">Number of Travellers</label>
-                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
+                    <input type="number" name="number_of_travellers" class="booking_no_of_travellers"
+                        placeholder="Number of people">
                 </div>
                 <div class="form-group">
                     <input type="button" class="booking_button" value="Submit">
@@ -119,7 +115,7 @@ function paradise_date_picker_shortcode_user()
                 </table>
             </div>
         </div>
-    <?php
+        <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -173,15 +169,16 @@ function paradise_date_picker_shortcode_driver()
         $implode_dates = "'" . implode("','", $current_user_block_dates) . "'";
 
 
-    ?>
+        ?>
         <div class="driver-dashboard-front">
-
-            <form method="post" class="paradise-front-driver">
-                <span>Select date to block date</span>
-                <input id="datePick" type="text" name="multi_data" data-blocked-date="<?php echo $implode_dates; ?>" />
-                <input type="submit" value="Block Date" name="block">
-            </form>
-
+            <div class="book-date-driver d-flex justify-space-around">
+                <form method="post" class="paradise-front-driver">
+                    <span>Select date to block date</span>
+                    <input id="datePick" type="text" name="multi_data" data-blocked-date="<?php echo $implode_dates; ?>" />
+                    <input type="submit" value="Block Date" name="block">
+                </form>
+                <div id="ui-datepicker" class='ui-datepicker-calendar'></div>
+            </div>
             <div class="table-wrapper paradise-driver-table">
                 <?php
                 $driver_booking_details = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE assigned_user=%d AND status=%s ORDER BY id desc", $current_user_id, 'booking'));
@@ -200,7 +197,7 @@ function paradise_date_picker_shortcode_driver()
                     <tbody>
                         <?php
                         foreach ($driver_booking_details as $driver_booking_detail) {
-                        ?>
+                            ?>
                             <tr>
 
                                 <td>
@@ -223,15 +220,14 @@ function paradise_date_picker_shortcode_driver()
 
                             </tr>
 
-                        <?php
+                            <?php
                         }
                         ?>
                     </tbody>
                 </table>
             </div>
         </div>
-
-    <?php
+        <?php
     }
     $output = ob_get_contents();
     ob_get_clean();
@@ -331,6 +327,8 @@ function book_date_range_for_car_booking()
             $format = array('%d', '%s', '%s');
             $wpdb->insert($table, $data, $format);
         }
+    } else {
+        echo 'block date haru xa';
     }
     wp_die();
 }
@@ -414,40 +412,21 @@ if (!function_exists('paradise_user_profile_fields')) {
     {
         global $pagenow;
         $phone_number = get_user_meta($user->id, 'phone_number', true);
-        $user_role = $user->roles;
 
-    ?>
+        ?>
 
         <table class="form-table">
             <tr>
                 <th><label for="phone_number">Phone Number</label></th>
                 <td>
-                    <input type="number" name="phone_number" id="phone_number" value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text" placeholder="Enter phone number." />
+                    <input type="number" name="phone_number" id="phone_number"
+                        value="<?php echo $phone_number ? $phone_number : ''; ?>" class="regular-text"
+                        placeholder="Enter phone number." />
                 </td>
             </tr>
         </table>
         <?php
-       if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
-            $car_image_id = get_user_meta($user->id, 'car_image_id', true);
-            $car_image_src = wp_get_attachment_url($car_image_id);
-        ?>
 
-            <table class="form-table">
-                <tr>
-                    <th><label for="phone_number">Vehicle Image</label></th>
-                    <td>
-                        <div class="driver_car_image_main">
-
-                            <img src="<?php echo $car_image_src ? $car_image_src : '' ?>" id="driver-car-image-src">
-                            <a href='#' class='upload_car_image button button-secondary'><?php _e('Upload Vehicle Image'); ?></a>
-
-                            <input type='hidden' name='car_image_id' id='car_image_id' value='<?php echo $car_image_id ? $car_image_id : ''; ?>' />
-                        </div>
-                    </td>
-                </tr>
-            </table>
-<?php
-        }
     }
 }
 
@@ -462,9 +441,6 @@ if (!function_exists('paradise_save_user_profile_fields')) {
 
         if (isset($_POST['phone_number'])) {
             update_user_meta($user_id, 'phone_number', $_POST['phone_number']);
-        }
-        if (isset($_POST['car_image_id'])) {
-            update_user_meta($user_id, 'car_image_id', $_POST['car_image_id']);
         }
     }
 }
