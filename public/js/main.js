@@ -37,7 +37,7 @@ jQuery(document).ready(function () {
   jQuery("#datePick").multiDatesPicker({
     dateFormat: "yy-mm-dd",
     minDate: 0,
-    
+
   });
   jQuery("#datePick").multiDatesPicker({
     disabled: true,
@@ -47,7 +47,7 @@ jQuery(document).ready(function () {
   // sunder js
 
   jQuery('input[name="daterange"]').daterangepicker({
-    minDate:new Date(),
+    minDate: new Date(),
     autoApply: true, // for hiding cancel 
   });
 
@@ -67,25 +67,36 @@ jQuery(document).ready(function () {
     // }
 
     jQuery.ajax({
-          type: "post",
-          url: myajax.ajaxurl,
-          data: {
-            action: "book_date_range_for_car_booking",
-            source : source_val,
-            destination : destination_val,
-            no_of_travellers : noOfTravellers,
-            start_date: moment(startDate).format("Y-MM-DD HH:mm:ss"),
-            end_date: moment(endDate).format("Y-MM-DD HH:mm:ss"),
-          },
-          success: function (response) {
-            console.log("response", response);
-            // alert(response);
-            if(response != ''){
-            jQuery('.paradise-msg').text(response);
-            return; 
-            }
-            location.reload();
-          },
-        });
+      type: "post",
+      url: myajax.ajaxurl,
+      data: {
+        action: "book_date_range_for_car_booking",
+        source: source_val,
+        destination: destination_val,
+        no_of_travellers: noOfTravellers,
+        start_date: moment(startDate).format("Y-MM-DD HH:mm:ss"),
+        end_date: moment(endDate).format("Y-MM-DD HH:mm:ss"),
+      },
+      success: function (response) {
+        console.log("response", response);
+        // alert(response);
+        if (response != '') {
+          jQuery('.paradise-msg').text(response);
+          return;
+        }
+        location.reload();
+      },
+    });
   });
+});
+
+// Arpan js
+jQuery(document).ready(function () {
+  jQuery("#ui-datepicker-div").multiDatesPicker({
+    dateFormat: "yy-mm-dd",
+    minDate: 0,
+    addDisabledDates: '<?php echo $implode_dates; ?>'
+  });
+
+  jQuery("#ui-datepicker-div").multiDatesPicker('show');
 });
