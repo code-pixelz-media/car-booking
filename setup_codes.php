@@ -2,6 +2,8 @@
 
 function paradise_post_type_init()
 {
+    global $wp_roles;
+
     $labels = array(
         'name'                  => _x('Bookings', 'Post type general name', 'car-booking'),
         'singular_name'         => _x('Booking', 'Post type singular name', 'car-booking'),
@@ -47,6 +49,9 @@ function paradise_post_type_init()
     );
 
     register_post_type('car_booking', $args);
+
+    // allowing driver to upload media files
+    $wp_roles->add_cap('driver','upload_files');
 }
 add_action('init', 'paradise_post_type_init');
 
