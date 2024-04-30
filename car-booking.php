@@ -62,6 +62,7 @@ function activate_paradise_plugin()
                         'read'         => true,  // true allows this capability
                         'edit_posts'   => false,
                         'delete_posts' => false, // Use false to explicitly deny
+                        
                 )
         );
 

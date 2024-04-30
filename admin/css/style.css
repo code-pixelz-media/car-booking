@@ -1,0 +1,101 @@
+.pts_admin_wrapper {
+  background-color: #fff;
+    border: 1px solid #dedede;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    max-width: 80%;
+    margin: 20px 0;
+    padding: 30px;
+} 
+.pts_admin_wrapper h2 {
+border-bottom: 1px solid #e0e0e0;
+margin-top: 0;
+padding: 10px 0;
+}
+.pts_admin_wrapper .form-group {
+  margin: 15px 0;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+.pts_admin_wrapper .form-group label {
+  min-width: 150px;
+}
+.paradise-admin-table{
+  margin: 15px 0;
+}
+.paradise-admin-table .paradise-table {
+  border-radius: 0;
+}
+.paradise-admin-table h4 {
+  background: #87680c !important;
+    padding: 15px 20px;
+    color: #fff;
+    margin: 0;
+    font-size: 1.5em;
+}
+.booking-setting-table {
+  border: transparent;
+    border-collapse: collapse;
+    width: 50%;
+    background: #fff;
+    padding: 20px;
+    margin-top: 20px;
+}
+.booking-setting-table td,
+.booking-setting-table th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+.booking-setting-table th {
+  background: #23282d;
+    color: #fff;
+}
+.paradise-table tr td:first-child, .paradise-table tr td:last-child  {
+  display: flex;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    text-align: left;
+    gap: 10px;
+}
+.paradise-table tr td:first-child img, .paradise-table tr td:last-child img{
+  width: 50px;
+    border-radius: 50px;
+    height: 50px;
+    object-fit: cover;
+    object-position: top;
+}
+.paradise-table tr td:first-child span, .paradise-table tr td:last-child span  {
+  display: block;
+}
+.paradise-table tr td:first-child  span + span, .paradise-table tr td:last-child  span + span {
+  margin-top: 5px; /* Adjust spacing as needed */
+}
+#admin_user_date_destination input[type='submit'] {
+  background: #007cba;
+  align-items: center;
+  -webkit-appearance: none;
+  border: 0;
+  border-radius: 2px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  height: 36px;
+  margin: 0;
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: box-shadow .1s linear;
+  outline: 1px solid #0000;
+  text-decoration: none;
+  text-shadow: none;
+  white-space: nowrap;
+}
