@@ -68,6 +68,125 @@ jQuery(document).ready(function ($) {
         .open();
   });
 
+  //other image field on backend
+  // driver liscence image uploader
+  jQuery("body").on("click", ".upload_liscence_image", function (e) {
+    e.preventDefault();
+
+    var button = jQuery(this),
+      cp_uploader = wp
+        .media({
+          title: "Select or Upload a Liscence Image",
+
+          library: {
+            uploadedTo: wp.media.view.settings.post.id,
+
+            type: "image",
+          },
+
+          button: {
+            text: "Use this image",
+          },
+
+          multiple: false,
+        })
+        .on("select", function () {
+          var attachment = cp_uploader
+            .state()
+            .get("selection")
+            .first()
+            .toJSON();
+
+          jQuery("#liscence").val(attachment.id);
+          jQuery("#liscence-image-src").attr("src", attachment.url);
+        })
+
+        .open();
+  });
+
+  //video  uploader
+  jQuery("body").on("click", ".upload_video_image", function (e) {
+    e.preventDefault();
+    var button = jQuery(this),
+      cp_uploader = wp
+        .media({
+          title: "Select or Upload a video",
+          library: {
+            uploadedTo: wp.media.view.settings.post.id,
+            type: "video",
+          },
+          button: {
+            text: "Use this video",
+          },
+          multiple: false,
+        })
+        .on("select", function () {
+          var attachment = cp_uploader
+            .state()
+            .get("selection")
+            .first()
+            .toJSON();
+          jQuery("#ps_video_id").val(attachment.id);
+          jQuery("#video-src").attr("src", attachment.url);
+        })
+        .open();
+  });
+
+  // other document 1 image uploader
+  jQuery("body").on("click", ".upload_other_doc1_image", function (e) {
+    e.preventDefault();
+    var button = jQuery(this),
+      cp_uploader = wp
+        .media({
+          title: "Select or Upload a Other Document Image",
+          library: {
+            uploadedTo: wp.media.view.settings.post.id,
+            type: "image",
+          },
+          button: {
+            text: "Use this image",
+          },
+          multiple: false,
+        })
+        .on("select", function () {
+          var attachment = cp_uploader
+            .state()
+            .get("selection")
+            .first()
+            .toJSON();
+          jQuery("#other_doc1_id").val(attachment.id);
+          jQuery("#other-doc1-src").attr("src", attachment.url);
+        })
+        .open();
+  });
+  // other document 2 image uploader
+  jQuery("body").on("click", ".upload_other_doc2_image", function (e) {
+    e.preventDefault();
+    var button = jQuery(this),
+      cp_uploader = wp
+        .media({
+          title: "Select or Upload a Other Document Image",
+          library: {
+            uploadedTo: wp.media.view.settings.post.id,
+            type: "image",
+          },
+          button: {
+            text: "Use this image",
+          },
+          multiple: false,
+        })
+        .on("select", function () {
+          var attachment = cp_uploader
+            .state()
+            .get("selection")
+            .first()
+            .toJSON();
+          jQuery("#other_doc2_id").val(attachment.id);
+          jQuery("#other-doc2-src").attr("src", attachment.url);
+        })
+        .open();
+  });
+
   jQuery('input[name="admin_daterange"]').daterangepicker({
     minDate: new Date(),
     autoApply: true, // for hiding cancel and apply button

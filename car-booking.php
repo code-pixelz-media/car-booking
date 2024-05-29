@@ -59,10 +59,8 @@ function activate_paradise_plugin()
                 'driver',
                 __('Driver', 'car-booking'),
                 array(
-                        'read'         => true,  // true allows this capability
-                        'edit_posts'   => false,
-                        'delete_posts' => false, // Use false to explicitly deny
-                        
+                        'upload_files' => true,
+                        'edit_posts' => true, // This capability allows viewing the media library
                 )
         );
 
@@ -84,6 +82,7 @@ function deactivate_paradise_plugin()
         $table_name = $wpdb->prefix . 'car_booking';
         $sql = "DROP TABLE IF EXISTS $table_name";
         $wpdb->query($sql);
+        remove_role('driver');
 }
 
 $init_file = PLUGIN_DIR . 'car-booking-loading.php';

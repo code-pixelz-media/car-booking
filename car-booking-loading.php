@@ -47,10 +47,12 @@ function paradise_date_picker_shortcode_user()
         global $wpdb;
         $current_user_id = get_current_user_id();
         $table = $wpdb->prefix . 'car_booking';
+        $avatar_image = plugin_dir_url(__FILE__) . '/assets/images/avatar.jpeg';
         $user_upcoming_rides = $wpdb->get_results("SELECT * FROM $table WHERE `status` = 'booking' AND `user_id` = $current_user_id AND DATE(date_to)>NOW() ORDER BY id desc"); ?>
         <!-- HTML code here -->
         <div class="customer-dashboard-front">
             <div class="paradise-msg"></div>
+            <div class="booking-success">Booked Successfully !</div>
             <form id="user_date_destination">
                 <div class="booking_details">
                     <div class="form-group">
@@ -74,22 +76,24 @@ function paradise_date_picker_shortcode_user()
                         <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
                     </div>
                 </div>
-                <div class="form-group">
-                    <input type="button" class="booking_button" value="Submit">
-                </div>
 
                 <div class="form-group drivers-details">
                     <input type="hidden" class="driver_id">
                     <img src="#" class="driver_vehicle_image " alt="vehicle">
                     <img src="#" class="driver_profile_image" alt='driver'>
-                    <span class="driver_name"> </span>
-                    <span class="driver_contact"></span>
+                    <div class="paradise_driver_details">
+                        <span class="driver_name"> </span>
+                        <span class="driver_contact"></span>
+                    </div>
 
                 </div>
                 <div class="form-group">
                     <input type="button" class="booking_next_button" value="Next">
                 </div>
 
+                <div class="form-group" id="user-side-submit-btn">
+                    <input type="button" class="booking_button" value="Submit">
+                </div>
             </form>
             <div class="table-wrapper paradise-customer-table">
                 <h4 class="customer-upcoming-rides">Upcoming Journey</h4>
@@ -109,6 +113,7 @@ function paradise_date_picker_shortcode_user()
 
                         <?php
                         if ($user_upcoming_rides) {
+
                             foreach ($user_upcoming_rides as $user_upcoming_ride) { ?>
                                 <tr>
                                     <td><?php echo date("Y-m-d", strtotime($user_upcoming_ride->date_from)); ?></td>
@@ -128,17 +133,17 @@ function paradise_date_picker_shortcode_user()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <div class="driver_details">
-                                            <span><?php echo $user_details->display_name; ?> </span><span>
-                                                <?php echo $phone_number ?></span>
+                                            <span><?php echo $user_details->display_name; ?> </span>
+                                            <span><?php echo $phone_number ?></span>
                                         </div>
                                     </td>
                                 </tr>
                         <?php }
                         } else {
                             echo '<tr>';
-                            echo '<td> <h5>No data found. </h5></td>';
+                            echo '<td> No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -182,7 +187,7 @@ function paradise_date_picker_shortcode_user()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <div class="driver_details">
                                             <span><?php echo $user_details->display_name; ?> </span><span>
                                                 <?php echo $phone_number ?></span>
@@ -192,7 +197,7 @@ function paradise_date_picker_shortcode_user()
                         <?php }
                         } else {
                             echo '<tr>';
-                            echo '<td><h5>No data found. </h5></td>';
+                            echo '<td>No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -213,7 +218,7 @@ function paradise_date_picker_shortcode_driver()
 {
     $current_user_id = get_current_user_id();
     $user = get_userdata($current_user_id);
-
+    $avatar_image = plugin_dir_url(__FILE__) . '/assets/images/avatar.jpeg';
     // Get all the user roles as an array.
     $user_roles = $user->roles;
 
@@ -232,9 +237,9 @@ function paradise_date_picker_shortcode_driver()
 
     if (is_user_logged_in()) {
 
-        $data_of_blocked_date_current_users = get_block_date_of_specific_user();
 
         if (isset($_POST['block'])) {
+            $data_of_blocked_date_current_users = get_block_date_of_specific_user();
             if (!$data_of_blocked_date_current_users[0]->{'blocked_date'}) {
                 $block_date = $_POST['multi_data'];
                 $data = array('user_id' => $current_user_id, 'blocked_date' => $block_date, 'status' => 'block');
@@ -308,7 +313,7 @@ function paradise_date_picker_shortcode_driver()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <div class="driver_details">
                                             <span><?php echo $user_details->display_name; ?> </span><span>
                                                 <?php echo $phone_number ?></span>
@@ -325,7 +330,7 @@ function paradise_date_picker_shortcode_driver()
                             }
                         } else {
                             echo '<tr>';
-                            echo '<td> <h5> No data found. </h5></td>';
+                            echo '<td>  No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -366,7 +371,7 @@ function paradise_date_picker_shortcode_driver()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <span><?php echo $user_details->display_name; ?> </span><span>
                                             <?php echo $phone_number ?></span>
                                     </td>
@@ -381,7 +386,7 @@ function paradise_date_picker_shortcode_driver()
                             }
                         } else {
                             echo '<tr>';
-                            echo '<td><h5> No data found. </h5></td>';
+                            echo '<td> No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -539,6 +544,7 @@ function book_date_range_for_car_booking()
         $assigned = array('user_id' => $current_user_id, 'date_from' => $starting_date, 'date_to' => $ending_date, 'assigned_user' => $random_id, 'source' => $source, 'destination' => $destination, 'no_of_travellers' => $no_of_travellers, 'status' => 'booking');
         $assigned_format = array('%d', '%s', '%s', '%d', '%s', '%s', '%d', '%s');
         $wpdb->insert($table, $assigned, $assigned_format);
+
         // if user alerady database ma xa vane random id ko block date update garxa natra insert garxa
         if ($result) {
             $add_block_id = $wpdb->get_results("UPDATE $table SET `blocked_date` = CONCAT(blocked_date, ', $concat_ids') WHERE `user_id` = $random_id");
@@ -547,6 +553,26 @@ function book_date_range_for_car_booking()
             $format = array('%d', '%s', '%s');
             $wpdb->insert($table, $data, $format);
         }
+
+        $customer_info = get_userdata($current_user_id);
+        $driver_info = get_userdata($random_id);
+
+        $customer_email = $customer_info->user_email;
+        $driver_email = $driver_info->user_email;
+        $admin_email = get_option('admin_email');
+        // // // for sending mail
+        $subject = 'Confirmation of Booked Trip';
+        $body = 'We are thrilled to confirm that your trip from ' . $source . ' to ' . $destination . ' has been successfully booked! Your journey is scheduled to begin on ' . $starting_date . ' and conclude on ' . $ending_date . '.';
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        wp_mail($customer_email, $subject, $body, $headers); // for customer 
+
+        wp_mail($driver_email, $subject, $body, $headers); // for driver
+
+        $admin_subject = 'New Booked Trip';
+        $admin_body = 'The new trip has been booked from ' . $source . ' to ' . $destination . ' and is scheduled to run from ' . $starting_date . ' to ' . $ending_date . '';
+
+        wp_mail($admin_email, $admin_subject, $admin_body, $headers); // for admin
     } else {
         echo 'block date haru xa';
     }
@@ -588,7 +614,10 @@ if (!function_exists('paradise_get_avilable_driver')) {
 
         foreach ($get_blocked_users_data as $get_blocked_user_data) {
             // getting driver id having blocked date
+
             $user_id = (int) $get_blocked_user_data->{'user_id'};
+            // $user_details = get_userdata($user_id);
+
             $blocked_dates = $get_blocked_user_data->{'blocked_date'};  // getting blocked date -> in string 
             $explode_blocked_dates = explode(',', $blocked_dates); // converting blocked date into an array;
 
@@ -685,6 +714,80 @@ if (!function_exists('paradise_user_profile_fields')) {
                         </td>
                     </tr>
                 </table>
+            <?php
+            }
+            if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
+                $video_id = get_user_meta($user->id, 'ps_video_id', true);
+                $video_src = wp_get_attachment_url($video_id);
+            ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="ps-video">Video</label></th>
+                        <td>
+                            <div class="driver_car_image_main">
+                                <!-- <img src="<?php //echo $video_src ? $video_src : '' ?>" id="video-src"> -->
+                                <video id="my-video" class="video-js" controls preload="auto" <source src="<?php echo $video_src ? $video_src : '' ?>" type='video/mp4'></video>
+                                <a href='#' class='upload_video_image button button-secondary'><?php _e('Upload Video'); ?></a>
+                                <input type='hidden' name='ps_video_id' id='ps_video_id' value='<?php echo $video_id ? $video_id : ''; ?>' />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <?php
+            }
+            if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
+                $liscence_image_id = get_user_meta($user->id, 'liscence', true);
+                $liscence_image_src = wp_get_attachment_url($liscence_image_id);
+            ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="liscence">Liscence Image</label></th>
+                        <td>
+                            <div class="driver_car_image_main">
+                                <img src="<?php echo $liscence_image_src ? $liscence_image_src : '' ?>" id="liscence-image-src">
+                                <a href='#' class='upload_liscence_image button button-secondary'><?php _e('Upload Liscence Image'); ?></a>
+
+                                <input type='hidden' name='liscence' id='liscence' value='<?php echo $liscence_image_id ? $liscence_image_id : ''; ?>' />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <?php
+            }
+            if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
+                $other_doc1_id = get_user_meta($user->id, 'other_doc1_id', true);
+                $other_doc1_src = wp_get_attachment_url($other_doc1_id);
+            ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="other-document1">Other Document Image</label></th>
+                        <td>
+                            <div class="driver_car_image_main">
+                                <img src="<?php echo $other_doc1_src ? $other_doc1_src : '' ?>" id="other-doc1-src">
+                                <a href='#' class='upload_other_doc1_image button button-secondary'><?php _e('Upload Other Document Image'); ?></a>
+                                <input type='hidden' name='other_doc1_id' id='other_doc1_id' value='<?php echo $other_doc1_id ? $other_doc1_id : ''; ?>' />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            <?php
+            }
+            if (($pagenow == 'user-edit.php' || $pagenow == 'profile.php') && in_array('driver', $user_role)) {
+                $other_doc2_id = get_user_meta($user->id, 'other_doc2_id', true);
+                $other_doc2_src = wp_get_attachment_url($other_doc2_id);
+            ?>
+                <table class="form-table">
+                    <tr>
+                        <th><label for="other_doc2">Other Documents Image</label></th>
+                        <td>
+                            <div class="driver_car_image_main">
+                                <img src="<?php echo $other_doc2_src ? $other_doc2_src : '' ?>" id="other-doc2-src">
+                                <a href='#' class='upload_other_doc2_image button button-secondary'><?php _e('Upload Other Document Image'); ?></a>
+                                <input type='hidden' name='other_doc2_id' id='other_doc2_id' value=' <?php echo $other_doc2_id ? $other_doc2_id : ''; ?>' />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
     <?php
             }
         }
@@ -707,6 +810,18 @@ if (!function_exists('paradise_user_profile_fields')) {
             }
             if (isset($_POST['profile_image_id'])) {
                 update_user_meta($user_id, 'profile_image_id', $_POST['profile_image_id']);
+            }
+            if (isset($_POST['liscence'])) {
+                update_user_meta($user_id, 'liscence', $_POST['liscence']);
+            }
+            if (isset($_POST['other_doc1_id'])) {
+                update_user_meta($user_id, 'other_doc1_id', $_POST['other_doc1_id']);
+            }
+            if (isset($_POST['other_doc2_id'])) {
+                update_user_meta($user_id, 'other_doc2_id', $_POST['other_doc2_id']);
+            }
+            if (isset($_POST['ps_video_id'])) {
+                update_user_meta($user_id, 'ps_video_id', $_POST['ps_video_id']);
             }
         }
     }

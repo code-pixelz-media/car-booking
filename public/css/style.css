@@ -19,22 +19,21 @@
   margin: auto;
 }
 .customer-dashboard-front .form-group {
-  padding: 10px 20px;
+  padding: 10px 5px;
   border: none;
   display: flex;
   flex-direction: row;
-  gap: 10px;
-  border-right: 1px dashed #eaeaea;
+  gap: 15px;
   align-items: center;
 }
 .customer-dashboard-front .form-group:last-child {
   border: transparent;
-  padding: 0;
 }
 .customer-dashboard-front input:not(input[type="button"]),
 .paradise-front-driver #datePick {
   padding: 10px 20px;
   border: 1px solid #eaeaea;
+  border-radius: 3px;
 }
 .customer-dashboard-front input[type="button"],
 input[type="submit"] {
@@ -42,6 +41,8 @@ input[type="submit"] {
   border: none;
   color: #fff;
   padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 3px;
 }
 .customer-dashboard-front label {
   display: none;
@@ -53,7 +54,44 @@ input[type="submit"] {
   flex-wrap: wrap;
   justify-content: start;
 }
+.customer-dashboard-front #user_date_destination .booking_details {
+  display: flex;
+}
 
+.customer-dashboard-front #user_date_destination .booking_details .form-group {
+  border-right: none;
+}
+.paradise-customer-table,
+.paradise-driver-table {
+  margin: 15px 0;
+}
+.paradise-customer-table h4,
+.paradise-driver-table h4 {
+  background: #87680c !important;
+  padding: 15px 20px;
+  color: #fff;
+  margin: 0;
+  font-size: 20px !important;
+  font-weight: bold;
+}
+.table-wrapper h5 {
+  font-size: 12px;
+  font-family: "Inter";
+  margin: 0;
+}
+.customer-dashboard-front #user_date_destination .drivers-details img {
+  width: 150px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.driver_details span:first-child {
+  font-size: 16px;
+}
+.paradise_driver_details {
+  display: flex;
+  flex-direction: column;
+}
 .paradise-front-driver {
   display: flex;
   flex-direction: column;
@@ -159,6 +197,8 @@ h2.paradise-table-header {
   background-color: white;
   overflow-x: auto;
   margin: 0;
+  border-radius: 0;
+  margin-top: 0;
 }
 #bf9b30 .paradise-table td,
 .paradise-table th {
@@ -181,8 +221,20 @@ h2.paradise-table-header {
 .paradise-table thead th {
   color: #ffffff !important;
   background: #bf9b30 !important;
+  border-right-color: #d3b14b;
+  border-left: none;
 }
-
+.paradise-table thead th:first-child {
+  border-left: 1px solid #bf9b30;
+}
+.paradise-table tbody td {
+  border: none;
+  border-right: 1px solid #ebebeb;
+  border-left: 1px solid #ebebeb;
+}
+.paradise-table tbody tr {
+  border: 1px solid #ebebeb;
+}
 /* #primary .paradise-table#pd-cust-table thead th:nth-child(odd),
 #primary .paradise-table#pd-driver-table thead th:nth-child(odd)
 {
@@ -198,6 +250,14 @@ h2.paradise-table-header {
   width: 50px;
   border-radius: 50px;
 }
+.paradise-driver-table .paradise-table tr td:last-child {
+  display: table-cell;
+  text-align: center;
+}
+.paradise-customer-table .paradise-table tr td:first-child {
+  display: table-cell;
+  text-align: center;
+}
 /* .paradise-table td:last-child, */
 .paradise-table td:first-child:not(.paradise-customer-table td),
 #pd-cust-table td:last-child {
@@ -209,13 +269,7 @@ h2.paradise-table-header {
 .table-wrapper {
   overflow-x: auto;
 }
-/* Responsive */
 
-@media screen and (max-width: 767px) {
-  .table-wrapper {
-    margin: 20px;
-  }
-}
 /* datepicker css */
 #ui-datepicker-div .ui-datepicker-prev::before,
 #ui-datepicker .ui-datepicker-prev::before {
@@ -342,10 +396,55 @@ table.ui-datepicker-calendar {
   color: #000;
 }
 
-
-
 /* sunder csss */
 
-#ui-datepicker-div{
+#ui-datepicker-div {
   display: none;
+}
+
+/* Responsive */
+@media only screen and (min-width: 768px) and (max-width: 1240px) {
+  .customer-dashboard-front #user_date_destination .booking_details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .customer-dashboard-front #user_date_destination .booking_details > div {
+    flex-basis: 49%;
+    padding: 10px 0;
+  }
+  .customer-dashboard-front input:not(input[type="button"]),
+  .paradise-front-driver #datePick {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .table-wrapper {
+    margin: 20px;
+  }
+  .customer-dashboard-front .form-group,
+  .customer-dashboard-front #user_date_destination .booking_details {
+    flex-direction: row;
+  }
+  .customer-dashboard-front #user_date_destination .booking_details {
+    display: flex;
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .customer-dashboard-front input:not(input[type="button"]),
+  .paradise-front-driver #datePick {
+    width: 100%;
+  }
+}
+
+.paradise-msg {
+  color: rgb(183, 56, 56);
+}
+.booking-success{
+  display: none;
+}
+
+video#my-video {
+  width: 200px;
 }
