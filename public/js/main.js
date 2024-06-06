@@ -1,4 +1,46 @@
+
 jQuery(document).ready(function ($) {
+  $(document).on("click", ".lrf-car-book-block-date", function () {
+    var calendarEl = $("#calendar")[0];
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek",
+      },
+      initialDate: "2024-06-12",
+      events: [
+        {
+          start: "2024-06-11T10:00:00",
+          end: "2024-06-11T16:00:00",
+          display: "background",
+          color: "#ff9f89",
+        },
+        {
+          start: "2024-06-13T10:00:00",
+          end: "2024-06-13T16:00:00",
+          display: "background",
+          color: "#ff9f89",
+        },
+        {
+          start: "2024-06-24",
+          end: "2024-06-28",
+          overlap: false,
+          display: "background",
+        },
+        {
+          start: "2024-06-06",
+          end: "2024-06-08",
+          overlap: false,
+          display: "background",
+        },
+      ],
+    });
+
+    calendar.render();
+  });
+
   var dates = jQuery("#datePick").data("blocked-date");
   var date;
   if (typeof dates !== "undefined") {
@@ -6,33 +48,6 @@ jQuery(document).ready(function ($) {
       return date.replace(/'/g, "").trim();
     });
   }
-  console.log(date);
-  // jQuery('input[name="daterange"]').daterangepicker(
-  //   {
-  //     opens: "left",
-  //   },
-  //   function (start, end, label) {
-  //     console.log(
-  //       "A new date selection was made: " +
-  //         start.format("YYYY-MM-DD") +
-  //         " to " +
-  //         end.format("YYYY-MM-DD")
-  //     );
-  //     jQuery.ajax({
-  //       type: "post",
-  //       url: myajax.ajaxurl,
-  //       data: {
-  //         action: "book_date_range_for_car_booking",
-  //         start_date: moment(start).format("Y-MM-DD HH:mm:ss"),
-  //         end_date: moment(end).format("Y-MM-DD HH:mm:ss"),
-  //       },
-  //       success: function (response) {
-  //         console.log("response", response);
-  //         // location.reload();
-  //       },
-  //     });
-  //   }
-  // );
 
   // jQuery("#datePick").multiDatesPicker("show");
   jQuery("#datePick").multiDatesPicker({
@@ -59,6 +74,10 @@ jQuery(document).ready(function ($) {
   // sunder js
 
   jQuery('input[name="daterange"]').daterangepicker({
+    minDate: new Date(),
+    autoApply: true, // for hiding cancel
+  });
+  jQuery('input[name="daterange_block"]').daterangepicker({
     minDate: new Date(),
     autoApply: true, // for hiding cancel
   });
@@ -172,45 +191,3 @@ jQuery(document).ready(function ($) {
     });
   });
 });
-
-//upload image of car-booking driver registraion
-
-// jQuery(document).ready(function ($) {
-//   function openMediaUploader(
-//     e,
-//     imgInputSelector,
-//     // fileNameSelector,
-//     // mediaType = "image"
-//   ) {
-//     e.preventDefault();
-//     // Create a new media uploader instance
-//     var mediaUploader = wp.media.frames.file_frame = wp.media({
-//       title: 'Choose Image',
-//       button: {
-//           text: 'Choose Image'
-//       },
-//       multiple: true
-//   });
-
-//     // When a file is selected, grab the URL and set it as the text field's value
-//     mediaUploader.on("select", function () {
-//       var attachment = mediaUploader.state().get("selection").first().toJSON();
-//       console.log(attachment);
-//       $(imgInputSelector).val(attachment.id);
-//       // jQuery(imgInputSelector)
-//       // .parent()
-//       // .parent()
-//       // .find(fileNameSelector)
-//       // .text(attachment.title);
-//       jQuery(imgInputSelector).val(attachment.id);
-//       console.log(jQuery(imgInputSelector).val());
-//     });
-
-//     // Open the uploader dialog
-//     mediaUploader.open();
-//   }
-
-//   $("#update_driver_image").click(function (e) {
-//     openMediaUploader(e, "#update-driver-img");
-//   });
-// });

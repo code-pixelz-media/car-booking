@@ -82,6 +82,7 @@
 .paradise-table tr td:first-child span,
 .paradise-table tr td:last-child span {
   display: block;
+  line-height: 1;
 }
 .paradise-table tr td:first-child span + span,
 .paradise-table tr td:last-child span + span {
@@ -132,6 +133,9 @@ USER PROFILE
 /* -----------------------------
 CAR TRIPS DOCS
 -------------------------------*/
+.wpte-dashboard .wpte-lrf-content-area .wpte-lrf-sidebar .wpte-lrf-tab {
+  outline: none !important;
+}
 .car-trip-doc {
   align-items: center;
   display: flex;
@@ -139,11 +143,21 @@ CAR TRIPS DOCS
   gap: 10px;
   padding: 20px;
 }
+.car-trip-doc:nth-child(odd) {
+  background-color: #f8f8f8;
+}
+
 .car-trip-doc .car-trip-col {
   /* flex-basis: calc(33.33% - 10px); */
-  text-align: center;
-  flex: 0 0 30%;
-  width: 33.33%;
+}
+.car-trip-doc .col-1 {
+  width: 25%;
+}
+.car-trip-doc .col-2 {
+width: 35%;
+}
+.car-trip-doc .col-3 {
+  width: 40%;
 }
 .car-trip-doc .car-trip-col:first-child {
   text-align: left;
@@ -152,24 +166,53 @@ CAR TRIPS DOCS
   text-align: right;
 }
 .car-trip-doc .car-trip-col img {
-  width: 200px;
+  width: 310px;
   height: 150px;
   object-fit: cover;
 }
 .car-trip-doc h5 {
   margin-bottom: 0;
 }
-.wp-travel .wpte-dashboard .wpte-lrf-content-area .lrf-car-trip::before,
-.wp-travel .wpte-dashboard .wpte-lrf-content-area .lrf-car-trip-doc::before {
+.car-trip-col input {
+  font-size: 18px;
+}
+.wp-travel .wpte-dashboard .wpte-lrf-sidebar .wpte-lrf-tab {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+.wp-travel
+  .wpte-dashboard
+  .wpte-lrf-content-area
+  .wpte-lrf-tab.lrf-car-trip::before,
+.wp-travel
+  .wpte-dashboard
+  .wpte-lrf-content-area
+  .wpte-lrf-tab.lrf-car-trip-doc::before {
   font-family: fontawesome;
   background-color: transparent;
   border: 0;
   box-shadow: none;
   font-size: 18px;
 }
-.wp-travel .wpte-dashboard .wpte-lrf-content-area .lrf-car-trip::before {
+.wp-travel
+  .wpte-dashboard
+  .wpte-lrf-content-area
+  .wpte-lrf-tab.lrf-car-trip::before {
   content: "\f1b9" !important;
 }
-.wp-travel .wpte-dashboard .wpte-lrf-content-area .lrf-car-trip-doc::before {
+.wp-travel
+  .wpte-dashboard
+  .wpte-lrf-content-area
+  .wpte-lrf-tab.lrf-car-trip-doc::before {
   content: "\f15b" !important;
+}
+.car-trip-image video#my-video {
+  width: 100%;
+}
+.car-trip-doc [type="file"]::file-selector-button {
+  display: block;
+}
+.car-trip-doc input {
+  width: 100%;
+  /* max-width: 120px; */
 }

@@ -82,9 +82,69 @@ function deactivate_paradise_plugin()
         $table_name = $wpdb->prefix . 'car_booking';
         $sql = "DROP TABLE IF EXISTS $table_name";
         $wpdb->query($sql);
-        remove_role('driver');
+        // remove_role('driver');
 }
 
 $init_file = PLUGIN_DIR . 'car-booking-loading.php';
 
 require $init_file;
+
+
+
+add_action('test', function () {
+?>
+        <!-- <style>
+                #calendar {
+                        margin: 0;
+                        padding: 0;
+                        font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+                        max-width: 1100px;
+                        margin: 40px auto;
+                        font-size: 14px;
+                }
+        </style>
+        <div id='calendar'></div>
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+        <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                        var calendarEl = document.getElementById('calendar');
+
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                                headerToolbar: {
+                                        left: 'prev,next today',
+                                        center: 'title',
+                                        right: 'dayGridMonth,timeGridWeek'
+                                },
+                                initialDate: '2024-06-12',
+                                events: [{
+                                                start: '2024-06-11T10:00:00',
+                                                end: '2024-06-11T16:00:00',
+                                                display: 'background',
+                                                color: '#ff9f89'
+                                        },
+                                        {
+                                                start: '2024-06-13T10:00:00',
+                                                end: '2024-06-13T16:00:00',
+                                                display: 'background',
+                                                color: '#ff9f89'
+                                        },
+                                        {
+                                                start: '2024-06-24',
+                                                end: '2024-06-28',
+                                                overlap: false,
+                                                display: 'background'
+                                        },
+                                        {
+                                                start: '2024-06-06',
+                                                end: '2024-06-08',
+                                                overlap: false,
+                                                display: 'background'
+                                        }
+                                ]
+                        });
+
+                        calendar.render();
+                });
+        </script> -->
+<?php
+});

@@ -9,17 +9,18 @@
 function paradice_booking_load_scripts()
 {
     wp_enqueue_media();
+    wp_enqueue_script( 'fullcalender', 'https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js', '', rand(), true );
     wp_enqueue_script('paradise-jquery', "https://cdn.jsdelivr.net/jquery/latest/jquery.min.js", array(), rand());
     wp_enqueue_script('paradise-moment', "https://cdn.jsdelivr.net/momentjs/latest/moment.min.js", array(), rand());
     wp_enqueue_script('paradise-datepicker-js', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js", array(), rand());
     wp_enqueue_script('paradise-jquery-ui-js', "https://code.jquery.com/ui/1.9.2/jquery-ui.js", array(), rand());
     wp_enqueue_script('paradise-multi-datepicker-js', "https://cdn.rawgit.com/dubrox/Multiple-Dates-Picker-for-jQuery-UI/master/jquery-ui.multidatespicker.js", array(), rand());
-    wp_enqueue_script('paradise-main-js', plugin_dir_url(__FILE__) . '/public/js/main.js', array(), rand());
+    wp_enqueue_script('paradise-main-js', plugin_dir_url(__FILE__) . 'public/js/main.js', array(), rand());
     wp_enqueue_style('paradise-datepicker-css', "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css", false, rand());
-    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . '/public/css/style.css', false, rand());
+    wp_enqueue_style('paradise-style-css', plugin_dir_url(__FILE__) . 'public/css/style.css', false, rand());
 
-    wp_enqueue_style('paradise-admin-style', plugin_dir_url(__FILE__) . '/admin/css/style.css', false, rand());
-    wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . '/admin/js/script.js', array(), rand());
+    wp_enqueue_style('paradise-admin-style', plugin_dir_url(__FILE__) . 'admin/css/style.css', false, rand());
+    wp_enqueue_script('paradise-admin-js', plugin_dir_url(__FILE__) . 'admin/js/script.js', array(), rand());
 
     wp_localize_script('paradise-main-js', 'myajax', array('ajaxurl' => admin_url('admin-ajax.php')));
 
@@ -29,7 +30,6 @@ add_action('admin_enqueue_scripts', 'paradice_booking_load_scripts');
 add_action('wp_enqueue_scripts', 'paradice_booking_load_scripts');
 
 
-require plugin_dir_path(__FILE__) . '/setup_codes.php';
 
 function enqueue_font_awesome()
 {
@@ -38,6 +38,7 @@ function enqueue_font_awesome()
 }
 add_action('wp_enqueue_scripts', 'enqueue_font_awesome');
 
+require plugin_dir_path(__FILE__) . '/setup_codes.php';
 /* Use shortcode [paradise-date-picker-user] */
 add_shortcode('paradise-date-picker-user', 'paradise_date_picker_shortcode_user');
 function paradise_date_picker_shortcode_user()
@@ -56,8 +57,8 @@ function paradise_date_picker_shortcode_user()
             <form id="user_date_destination">
                 <div class="booking_details">
                     <div class="form-group">
-                        <label for="daterange">Date:</label>
                         <span class="dashicons dashicons-calendar"></span>
+                        <label for="daterange">Date</label>
                         <input type="text" name="daterange" class="booking_date_range" value="" />
                     </div>
                     <div class="form-group">
@@ -216,32 +217,33 @@ function paradise_date_picker_shortcode_user()
 add_shortcode('paradise-date-picker-driver', 'paradise_date_picker_shortcode_driver');
 function paradise_date_picker_shortcode_driver()
 {
-    $current_user_id = get_current_user_id();
-    $user = get_userdata($current_user_id);
-    $avatar_image = plugin_dir_url(__FILE__) . '/assets/images/avatar.jpeg';
-    // Get all the user roles as an array.
-    $user_roles = $user->roles;
-
-    if (!in_array('driver', $user_roles) && !in_array('administrator', $user_roles)) {
-        global $wp_query;
-        $wp_query->set_404();
-        status_header(404);
-        get_template_part(404); // This line displays the 404 template.
-        exit();
-    }
-
-
-    ob_start();
-    global $wpdb;
-    $table = $wpdb->prefix . 'car_booking';
-
     if (is_user_logged_in()) {
+        $current_user_id = get_current_user_id();
+        $user = get_userdata($current_user_id);
+        $avatar_image = plugin_dir_url(__FILE__) . '/assets/images/avatar.jpeg';
+        // Get all the user roles as an array.
+        $user_roles = $user->roles;
+
+        if (!in_array('driver', $user_roles) && !in_array('administrator', $user_roles)) {
+            global $wp_query;
+            $wp_query->set_404();
+            status_header(404);
+            get_template_part(404); // This line displays the 404 template.
+            exit();
+        }
+
+
+        ob_start();
+        global $wpdb;
+        $table = $wpdb->prefix . 'car_booking';
+
 
 
         if (isset($_POST['block'])) {
             $data_of_blocked_date_current_users = get_block_date_of_specific_user();
             if (!$data_of_blocked_date_current_users[0]->{'blocked_date'}) {
                 $block_date = $_POST['multi_data'];
+                var_dump($block_date);
                 $data = array('user_id' => $current_user_id, 'blocked_date' => $block_date, 'status' => 'block');
                 $format = array('%d', '%s', '%s');
                 $wpdb->insert($table, $data, $format);
@@ -274,10 +276,10 @@ function paradise_date_picker_shortcode_driver()
                     <input id="datePick" type="text" name="multi_data" data-blocked-date="<?php echo $implode_dates; ?>" />
                     <input type="submit" value="Block Date" name="block">
                 </form>
-                <?php if ($implode_dates) {
+                <?php //if ($implode_dates) {
                 ?>
-                    <div id='ui-datepicker' class='ui-datepicker-calendar'></div>
-                <?php } ?>
+                    <!-- <div id='ui-datepicker' class='ui-datepicker-calendar'></div> -->
+                <?php //} ?>
             </div>
             <div class="table-wrapper paradise-driver-table">
                 <?php
@@ -409,16 +411,6 @@ function get_block_date_of_specific_user()
     $data = $wpdb->get_results("SELECT blocked_date FROM $table WHERE `user_id` = $current_user_id AND `status`='block' ORDER BY id DESC LIMIT 1");
     return $data;
 }
-// function generate_random_driver()
-// {
-//     $args = array(
-//         'role'    => 'driver',
-//         'fields'  => 'ID'
-//     );
-//     $user_query = new WP_User_Query($args);
-//     $users = $user_query->get_results();
-//     return $users;
-// }
 
 /**
  * function paradise_random_driver is used for getting driver after user submit booking details
@@ -432,11 +424,8 @@ function paradise_random_driver()
     $current_user_id = get_current_user_id();
     $starting_date = $_POST['start_date'];
     $ending_date = $_POST['end_date'];
-    // $users_driver_ids = generate_random_driver();
     $date_range = array();
-    // $count_of_drivers = count($users_driver_ids);
 
-    // date rand implode gareko random id ko lagi block garna lai
     $starting_date_without_time = date("Y-m-d", strtotime($starting_date));
     $endiing_date_without_time = date("Y-m-d", strtotime($ending_date));
     $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time); // used for getting available drivers
@@ -449,9 +438,6 @@ function paradise_random_driver()
         wp_send_json_error($error);
         wp_die();
     }
-
-    // $current_date = strtotime($starting_date_without_time);
-    // $end_timestamp = strtotime($endiing_date_without_time);
 
     $random_key = array_rand($available_drivers);
     $random_id = $available_drivers[$random_key];
@@ -493,7 +479,6 @@ function book_date_range_for_car_booking()
     $starting_date = $_POST['start_date'];
     $ending_date = $_POST['end_date'];
     $random_id = $_POST['driver_id'];
-    // $users_driver_ids = generate_random_driver();
     $date_range = array();
     // $count_of_drivers = count($users_driver_ids);
 
@@ -660,8 +645,11 @@ if (!function_exists('paradise_user_profile_fields')) {
     function paradise_user_profile_fields($user)
     {
         global $pagenow;
-        $phone_number = get_user_meta($user->id, 'phone_number', true);
-        $user_role = $user->roles;
+        $id = $user->id ?? 0;
+        $phone_number = get_user_meta($id, 'phone_number', true) ?? '';
+        $user_role = $user->roles ?? 'subscriber';
+        $avatar_image = plugin_dir_url(__FILE__) . '/assets/images/avatar.jpeg';
+        $lisence_placeholder_image = plugin_dir_url(__FILE__) . '/assets/images/lisence-placeholder.png';
         ?>
 
             <table class="form-table">
@@ -688,7 +676,7 @@ if (!function_exists('paradise_user_profile_fields')) {
                                 <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" id="profile-image-src">
                                 <a href='#' class='upload_profile_image button button-secondary'><?php _e('Upload Profile Image'); ?></a>
 
-                                <input type='hidden' name='profile_image_id' id='profile_image_id' value='<?php echo $profile_image_id ? $profile_image_id : ''; ?>' />
+                                <input type='hidden' name='profile_image_id' id='profile_image_id' value='<?php echo $profile_image_id ? $profile_image_id : $avatar_image; ?>' />
                             </div>
                         </td>
                     </tr>
@@ -725,7 +713,8 @@ if (!function_exists('paradise_user_profile_fields')) {
                         <th><label for="ps-video">Video</label></th>
                         <td>
                             <div class="driver_car_image_main">
-                                <!-- <img src="<?php //echo $video_src ? $video_src : '' ?>" id="video-src"> -->
+                                <!-- <img src="<?php //echo $video_src ? $video_src : '' 
+                                                ?>" id="video-src"> -->
                                 <video id="my-video" class="video-js" controls preload="auto" <source src="<?php echo $video_src ? $video_src : '' ?>" type='video/mp4'></video>
                                 <a href='#' class='upload_video_image button button-secondary'><?php _e('Upload Video'); ?></a>
                                 <input type='hidden' name='ps_video_id' id='ps_video_id' value='<?php echo $video_id ? $video_id : ''; ?>' />
@@ -747,7 +736,7 @@ if (!function_exists('paradise_user_profile_fields')) {
                                 <img src="<?php echo $liscence_image_src ? $liscence_image_src : '' ?>" id="liscence-image-src">
                                 <a href='#' class='upload_liscence_image button button-secondary'><?php _e('Upload Liscence Image'); ?></a>
 
-                                <input type='hidden' name='liscence' id='liscence' value='<?php echo $liscence_image_id ? $liscence_image_id : ''; ?>' />
+                                <input type='hidden' name='liscence' id='liscence' value='<?php echo $liscence_image_id ? $liscence_image_id : $lisence_placeholder_image; ?>' />
                             </div>
                         </td>
                     </tr>
@@ -763,7 +752,7 @@ if (!function_exists('paradise_user_profile_fields')) {
                         <th><label for="other-document1">Other Document Image</label></th>
                         <td>
                             <div class="driver_car_image_main">
-                                <img src="<?php echo $other_doc1_src ? $other_doc1_src : '' ?>" id="other-doc1-src">
+                                <img src="<?php echo $other_doc1_src ? $other_doc1_src : $lisence_placeholder_image ?>" id="other-doc1-src">
                                 <a href='#' class='upload_other_doc1_image button button-secondary'><?php _e('Upload Other Document Image'); ?></a>
                                 <input type='hidden' name='other_doc1_id' id='other_doc1_id' value='<?php echo $other_doc1_id ? $other_doc1_id : ''; ?>' />
                             </div>
@@ -781,7 +770,7 @@ if (!function_exists('paradise_user_profile_fields')) {
                         <th><label for="other_doc2">Other Documents Image</label></th>
                         <td>
                             <div class="driver_car_image_main">
-                                <img src="<?php echo $other_doc2_src ? $other_doc2_src : '' ?>" id="other-doc2-src">
+                                <img src="<?php echo $other_doc2_src ? $other_doc2_src : $lisence_placeholder_image ?>" id="other-doc2-src">
                                 <a href='#' class='upload_other_doc2_image button button-secondary'><?php _e('Upload Other Document Image'); ?></a>
                                 <input type='hidden' name='other_doc2_id' id='other_doc2_id' value=' <?php echo $other_doc2_id ? $other_doc2_id : ''; ?>' />
                             </div>

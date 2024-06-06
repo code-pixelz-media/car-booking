@@ -19,7 +19,8 @@ function myBookingfunction()
 
 {
     global $wpdb;
-    $car_booking_table = $wpdb->prefix . 'car_booking'; ?>
+    $car_booking_table = $wpdb->prefix . 'car_booking';
+    $avatar_image = plugin_dir_url(__FILE__) . 'assets/images/avatar.jpeg'; ?>
     <div class="table-wrapper paradise-admin-table">
         <h4 class="upcoming-rides">Upcoming rides </h4>
         <table class="paradise-table">
@@ -55,7 +56,7 @@ function myBookingfunction()
                                 $customer_profile = wp_get_attachment_url($custmoer_profile_id);
                                 ?>
 
-                                <img src="<?php echo $customer_profile ? $customer_profile : '' ?>" alt="customer" />
+                                <img src="<?php echo $customer_profile ? $customer_profile : $avatar_image ?>" alt="customer" />
                                 <div class="admin_customer_details">
                                     <span><?php echo $customer_details->display_name; ?> </span><span>
                                         <?php echo $customer_phone_number ?></span>
@@ -78,7 +79,7 @@ function myBookingfunction()
                                 $driver_profile = wp_get_attachment_url($driver_profile_id);
                                 ?>
 
-                                <img src="<?php echo $driver_profile ? $driver_profile : '' ?>" alt="customer" />
+                                <img src="<?php echo $driver_profile ? $driver_profile : $avatar_image ?>" alt="customer" />
                                 <div class="admin_customer_details">
                                     <span><?php echo $driver_details->display_name; ?> </span><span>
                                         <?php echo $driver_phone_number ?></span>
@@ -132,7 +133,7 @@ function myBookingfunction()
                                 $customer_profile = wp_get_attachment_url($custmoer_profile_id);
                                 ?>
 
-                                <img src="<?php echo $customer_profile ? $customer_profile : '' ?>" alt="customer" />
+                                <img src="<?php echo $customer_profile ? $customer_profile : $avatar_image ?>" alt="customer" />
                                 <div class="admin_customer_details"> <span><?php echo $customer_details->display_name; ?>
                                     </span><span>
                                         <?php echo $customer_phone_number ?></span>
@@ -156,7 +157,7 @@ function myBookingfunction()
                                 $driver_profile = wp_get_attachment_url($driver_profile_id);
                                 ?>
 
-                                <img src="<?php echo $driver_profile ? $driver_profile : '' ?>" alt="customer" />
+                                <img src="<?php echo $driver_profile ? $driver_profile : $avatar_image ?>" alt="customer" />
                                 <div class="admin_customer_details">
                                     <span><?php echo $driver_details->display_name; ?> </span><span>
                                         <?php echo $driver_phone_number ?></span>
@@ -249,7 +250,11 @@ function myAddingBookingFunction()
         $current_date = strtotime($starting_date_without_time);
         $end_timestamp = strtotime($endiing_date_without_time);
 
+        // var_dump($starting_date_without_time);
+        // var_dump($endiing_date_without_time);
+
         $available_drivers = paradise_get_avilable_driver($starting_date_without_time, $endiing_date_without_time); // used for getting available drivers
+        // var_dump($available_drivers);
         if (($key = array_search($customer_id, $available_drivers)) !== false) {
 
             unset($available_drivers[$key]); // removing current user from available drivers
@@ -341,38 +346,44 @@ function myAddingBookingFunction()
 }
 
 
-function add_car_trip_tab_to_dashboard_menus($dashboard_menus)
+function add_car_trip_for_all_tab_to_dashboard_menus($dashboard_menus)
 {
+    $current_user = wp_get_current_user();
+    if (in_array('driver', (array) $current_user->roles)) {
+        $dashboard_menus['car-book-block-date'] = array(
+            'menu_title'      => __('Block date', 'driver-registration'),
+            'menu_class'      => 'lrf-car-book-block-date',
+            'menu_content_cb' => 'display_car_book_block_date',
+            'priority'        => 50,
+        );
+    }
     if (is_user_logged_in()) {
         // Get the current user's data
-        $current_user = wp_get_current_user();
-        if (in_array('driver', (array) $current_user->roles)) {
-            $dashboard_menus['car-trip'] = array(
-                'menu_title'      => __('Car Trip', 'driver-registration'),
-                'menu_class'      => 'lrf-car-trip',
-                'menu_content_cb' => 'display_car_trip_tab_content',
-                'priority'        => 50,
-            );
-            $dashboard_menus['car-trip-doc'] = array(
-                'menu_title'      => __('Car Trip Documents', 'driver-registration'),
-                'menu_class'      => 'lrf-car-trip-doc',
-                'menu_content_cb' => 'display_car_trip_doc_tab_content',
-                'priority'        => 50,
-            );
-        }
+        $dashboard_menus['car-trip-for-all'] = array(
+            'menu_title'      => __('Car Trip', 'car-booking'),
+            'menu_class'      => 'lrf-car-trip-for-all',
+            'menu_content_cb' => 'display_car_trip_for_all_tab_content',
+            'priority'        => 50,
+        );
+        $dashboard_menus['book-car'] = array(
+            'menu_title'      => __('Car Booking', 'car-booking'),
+            'menu_class'      => 'lrf-book-car',
+            'menu_content_cb' => 'book_car_callback_function',
+            'priority'        => 50,
+        );
     }
     return $dashboard_menus;
 }
-add_filter('wp_travel_engine_user_dashboard_menus', 'add_car_trip_tab_to_dashboard_menus');
+add_filter('wp_travel_engine_user_dashboard_menus', 'add_car_trip_for_all_tab_to_dashboard_menus');
 
-function display_car_trip_tab_content()
+function display_car_trip_for_all_tab_content()
 {
-    echo '<h2>' . __('Car Trips', 'driver-registration') . '</h2>';
-
+    echo '<h2>' . __('Car Journey', 'car-booking') . '</h2>';
     if (is_user_logged_in()) {
         global $wpdb;
         $current_user_id = get_current_user_id();
         $table = $wpdb->prefix . 'car_booking';
+        $avatar_image = plugin_dir_url(__FILE__) . 'assets/images/avatar.jpeg';
         $user_upcoming_rides = $wpdb->get_results("SELECT * FROM $table WHERE `status` = 'booking' AND `user_id` = $current_user_id AND DATE(date_to)>NOW() ORDER BY id desc"); ?>
         <!-- HTML code here -->
         <div class="customer-dashboard-front">
@@ -394,6 +405,7 @@ function display_car_trip_tab_content()
 
                         <?php
                         if ($user_upcoming_rides) {
+
                             foreach ($user_upcoming_rides as $user_upcoming_ride) { ?>
                                 <tr>
                                     <td><?php echo date("Y-m-d", strtotime($user_upcoming_ride->date_from)); ?></td>
@@ -413,17 +425,17 @@ function display_car_trip_tab_content()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <div class="driver_details">
-                                            <span><?php echo $user_details->display_name; ?> </span><span>
-                                                <?php echo $phone_number ?></span>
+                                            <span><?php echo $user_details->display_name; ?> </span>
+                                            <span><?php echo $phone_number ?></span>
                                         </div>
                                     </td>
                                 </tr>
                         <?php }
                         } else {
                             echo '<tr>';
-                            echo '<td> <h5>No data found. </h5></td>';
+                            echo '<td> No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -467,7 +479,7 @@ function display_car_trip_tab_content()
                                         $profile_image_src = wp_get_attachment_url($profile_image_id);
                                         ?>
 
-                                        <img src="<?php echo $profile_image_src ? $profile_image_src : '' ?>" alt="driver" />
+                                        <img src="<?php echo $profile_image_src ? $profile_image_src : $avatar_image; ?>" alt="driver" />
                                         <div class="driver_details">
                                             <span><?php echo $user_details->display_name; ?> </span><span>
                                                 <?php echo $phone_number ?></span>
@@ -477,7 +489,7 @@ function display_car_trip_tab_content()
                         <?php }
                         } else {
                             echo '<tr>';
-                            echo '<td><h5>No data found. </h5></td>';
+                            echo '<td>No data found. </td>';
                             echo '</tr>';
                         }
                         ?>
@@ -488,200 +500,171 @@ function display_car_trip_tab_content()
     <?php
     }
 }
-function display_car_trip_doc_tab_content()
+
+
+function book_car_callback_function()
 {
-    echo '<h2>' . __('Car Trips Docs', 'driver-registration') . '</h2>';
-    ?>
+    echo '<h2>' . __('Book your car', 'car-booking') . '</h2>'; ?>
 
-
-
-    <?php
-
-    if (is_user_logged_in()) {
-        $user_id = get_current_user_id();
-        if (isset($_POST['update'])) {
-            if (!empty($_FILES['update_driver_img']['name'])) {
-                update_image($_FILES['update_driver_img'], 'profile_image_id', $user_id);
-            }
-            if (!empty($_FILES['update_car_img']['name'])) {
-                update_image($_FILES['update_car_img'], 'car_image_id', $user_id);
-            }
-            if (!empty($_FILES['update_lisence_img']['name'])) {
-                update_image($_FILES['update_lisence_img'], 'liscence', $user_id);
-            }
-            if (!empty($_FILES['update_video']['name'])) {
-                update_image($_FILES['update_video'], 'ps_video_id', $user_id);
-            }
-            if (!empty($_FILES['update_doc1']['name'])) {
-                update_image($_FILES['update_doc1'], 'other_doc1_id', $user_id);
-            }
-            if (!empty($_FILES['update_doc2']['name'])) {
-                update_image($_FILES['update_doc2'], 'other_doc2_id', $user_id);
-            }
-        }
-
-        $driver_image_id = get_user_meta($user_id, "profile_image_id", true);
-        $car_image_id = get_user_meta($user_id, "car_image_id", true);
-        $ps_video_id = get_user_meta($user_id, "ps_video_id", true);
-        $liscence_id = get_user_meta($user_id, "liscence", true);
-        $other_doc1_id = get_user_meta($user_id, "other_doc1_id", true);
-        $other_doc2_id = get_user_meta($user_id, "other_doc2_id", true);
-
-        $driver_image_url = get_attachment_url($driver_image_id);
-        $car_image_url = get_attachment_url($car_image_id);
-        $video_url = get_attachment_url($ps_video_id);
-        $liscence_url = get_attachment_url($liscence_id);
-        $other_doc1_url = get_attachment_url($other_doc1_id);
-        $other_doc2_url = get_attachment_url($other_doc2_id);
-
-        if (isset($_POST['upload'])) {
-            // Process the image URL (e.g., save it as a post meta, display a message, etc.)
-            update_user_meta($user_id, 'profile_image_id', $driver_image_id);
-            // update_user_meta($user_id, 'car_image_id', $car_image_id);
-            // update_user_meta($user_id, 'ps_video_id', $ps_video_id);
-            // update_user_meta($user_id, 'liscence', $liscence_id);
-            // update_user_meta($user_id, 'other_doc1_id', $other_doc1_id);
-            // update_user_meta($user_id, 'other_doc2_id', $other_doc2_id);
-        }
-    }
-
-    ?>
-    <form method="post" enctype="multipart/form-data">
-
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Driver Image</h5>
+    <div class="paradise-msg"></div>
+    <div class="booking-success">Booked Successfully !</div>
+    <form id="user_date_destination">
+        <div class="booking_details">
+            <div class="form-group">
+                <span class="dashicons dashicons-calendar"></span>
+                <label for="daterange">Date</label>
+                <input type="text" name="daterange" class="booking_date_range" value="" />
             </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <img src="<?php echo $driver_image_url; ?>" alt="driver-image">
-                </div>
+            <div class="form-group">
+                <span class="dashicons dashicons-location"></span>
+                <label for="location-from">Source</label>
+                <input type="text" name="location-from" class="booking_source" placeholder="From">
             </div>
-            <div class="col-3 car-trip-col">
-                <!-- <button id="update_driver_image">Upload</button> -->
-                <input type="file" name="update_driver_img" id="update_driver_img">
+            <div class="form-group">
+                <span class="dashicons dashicons-location"></span>
+                <label for="location-to">Destination</label>
+                <input type="text" name="location-to" class="booking_destination" placeholder="To">
             </div>
-        </div>
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Car Image</h5>
-            </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <img src="<?php echo $car_image_url; ?>" alt="car-image">
-                </div>
-            </div>
-            <div class="col-3 car-trip-col">
-                <input type="file" name="update_car_img" id="update_car_img">
-            </div>
-        </div>
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Lisence</h5>
-            </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <img src="<?php echo $liscence_url; ?>" alt="liscence-image">
-                </div>
-            </div>
-            <div class="col-3 car-trip-col">
-                <input type="file" name="update_lisence_img" id="update_lisence_img">
-            </div>
-        </div>
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Video</h5>
-            </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <video id="my-video" class="video-js" controls preload="auto" <source src="<?php echo $video_url; ?>" type='video/mp4'></video>
-                    <!-- <img src="<?php //echo $video_url; ?>" alt="video"> -->
-                </div>
-            </div>
-            <div class="col-3 car-trip-col">
-                <input type="file" name="update_video" id="update_video" accept="video/mp4,video/x-m4v,video/*">
-            </div>
-        </div>
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Document1</h5>
-            </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <img src="<?php echo $other_doc1_url; ?>" alt="doc1-image">
-                </div>
-            </div>
-            <div class="col-3 car-trip-col">
-                <input type="file" name="update_doc1" id="update_doc1" accept=".pdf,.doc,.docx,image/*,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-            </div>
-        </div>
-        <div class="row car-trip-doc">
-            <div class="col-1 car-trip-col">
-                <h5>Document2</h5>
-            </div>
-            <div class="col-2 car-trip-col">
-                <div class="car-trip-image">
-                    <img src="<?php echo $other_doc2_url; ?>" alt="doc2-image">
-                </div>
-            </div>
-            <div class="col-3 car-trip-col">
-                <input type="file" name="update_doc2" id="update_doc2" accept=".pdf,.doc,.docx,image/*,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+            <div class="form-group">
+                <span class="dashicons dashicons-businessman"></span>
+                <label for="number_of_travellers">Number of Travellers</label>
+                <input type="number" name="number_of_travellers" class="booking_no_of_travellers" placeholder="Number of people">
             </div>
         </div>
 
-        <input type="submit" value="update" name="update">
+        <div class="form-group drivers-details">
+            <input type="hidden" class="driver_id">
+            <img src="#" class="driver_vehicle_image " alt="vehicle">
+            <img src="#" class="driver_profile_image" alt='driver'>
+            <div class="paradise_driver_details">
+                <span class="driver_name"> </span>
+                <span class="driver_contact"></span>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <input type="button" class="booking_next_button" value="Next">
+        </div>
+
+        <div class="form-group" id="user-side-submit-btn">
+            <input type="button" class="booking_button" value="Submit">
+        </div>
     </form>
 
 <?php
-
-}
-function get_attachment_url($attachment_id)
-{
-    $image_url = wp_get_attachment_url($attachment_id,true);
-    return $image_url;
 }
 
 
-function update_image($file, $meta_key, $user_id)
+
+
+function display_car_book_block_date()
 {
-    if (!empty($file['name'])) {
-        $uploaded_file = $file;
+    global $wpdb;
+    $table = $wpdb->prefix . 'car_booking';
+    $current_user_id = get_current_user_id();
+    echo '<h2>' . __('Block Dates', 'driver-registration') . '</h2>';
 
-        // Check for upload errors
-        if ($uploaded_file['error'] != 0) {
-            wp_die('There was an error uploading the image.');
-        }
+    if (isset($_POST['block_date'])) {
+        $dateRange = $_POST['daterange_block'];
+        list($startDate, $endDate) = explode(' - ', $dateRange);
+        $dates = getDatesBetween($startDate, $endDate);
 
-        // Use the WordPress function to handle file uploads
-        $upload = wp_handle_upload($uploaded_file, array('test_form' => false));
-        if ($upload && !isset($upload['error'])) {
-
-
-            // Get the path to the upload directory.
-            $wp_upload_dir = wp_upload_dir();
-
-            // Prepare an array of post data for the attachment.
-            $attachment = array(
-                'guid'           => $wp_upload_dir['url'] . '/' . basename($upload['file']),
-                'post_mime_type' => $upload['type'],
-                'post_title'     => preg_replace('/\.[^.]+$/', '', basename($upload['file'])),
-                'post_content'   => '',
-                'post_status'    => 'inherit'
-            );
-
-            // Insert the attachment.
-            $attach_id = wp_insert_attachment($attachment, $upload['file']);
-
-
-            if ($attach_id) {
-                update_user_meta($user_id, $meta_key, $attach_id);
-            } else {
-                wp_die('Failed to create attachment.');
-            }
+        $implode_date = implode(",", $dates);
+        $data_of_blocked_date_current_users = get_block_date_of_specific_user();
+        if (!$data_of_blocked_date_current_users[0]->{'blocked_date'}) {
+            echo 'if';
+            $data = array('user_id' => $current_user_id, 'blocked_date' => $implode_date, 'status' => 'block');
+            $format = array('%d', '%s', '%s');
+            $wpdb->insert($table, $data, $format);
         } else {
-            wp_die($upload['error']);
+            echo 'else';
+            $wpdb->query($wpdb->prepare("UPDATE $table SET blocked_date='$implode_date' WHERE user_id =%d AND status=%s", $current_user_id, 'block'));
         }
-    } else {
-        wp_die('No file was uploaded.');
     }
+    $current_user_block_dates = array();
+    $data_of_blocked_date_current_users = get_block_date_of_specific_user();
+    foreach ($data_of_blocked_date_current_users as $obj) {
+        $explode_dates = explode(", ", $obj->blocked_date);
+        foreach ($explode_dates as $explode_date) {
+            if (!in_array($explode_date, $current_user_block_dates)) {
+                $current_user_block_dates[] = $explode_date;
+            }
+        }
+    }
+    $implode_dates = '';
+    if ($current_user_block_dates) {
+        $implode_dates = "'" . implode("','", $current_user_block_dates) . "'";
+    } ?>
+    <style>
+        /* calender */
+        #calendar {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            font-size: 14px;
+            width: 50%;
+            margin: auto;
+        }
+
+        #calendar .fc-view-harness-active {
+            height: 814.815px;
+        }
+
+        #calendar .fc-col-header,
+        #calendar .fc-daygrid-body-unbalanced {
+            width: 1079px;
+        }
+
+        #primary .page .entry-content table.fc-col-header,
+        #primary .page .entry-content table.fc-scrollgrid-sync-table {
+            margin-top: 0;
+            width: 100% !important;
+            margin: 0;
+        }
+
+        #calendar .fc-scrollgrid-sync-table {
+            width: 1079px;
+            height: 648px;
+        }
+
+        #calendar .fc-scrollgrid .fc-scroller {
+            overflow: auto !important;
+        }
+        #calendar .fc-view-harness{
+            height: 650px !important;
+        }
+    </style>
+    <form method="post">
+        <div class="form-group">
+            <label for="daterange_block">Date:</label>
+            <span class="dashicons dashicons-calendar"></span>
+            <input type="text" name="daterange_block" class="block_date_range" value="" />
+        </div>
+
+        <input type="submit" name="block_date" value="Block">
+    </form>
+    <div id='calendar'></div>
+    <?php if ($implode_dates) { ?>
+        <!-- <div id='ui-datepicker' class='ui-datepicker-calendar'></div> -->
+    <?php } ?>
+<?php
+}
+
+
+function getDatesBetween($startDate, $endDate, $format = 'Y-m-d')
+{
+    $interval = new DateInterval('P1D');
+    $realEndDate = new DateTime($endDate);
+    $realEndDate->add($interval);
+
+    $period = new DatePeriod(new DateTime($startDate), $interval, $realEndDate);
+
+    $dates = [];
+    foreach ($period as $date) {
+        $dates[] = $date->format($format);
+    }
+
+    return $dates;
 }
